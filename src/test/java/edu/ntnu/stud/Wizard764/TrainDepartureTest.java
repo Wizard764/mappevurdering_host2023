@@ -162,4 +162,52 @@ public class TrainDepartureTest
 
         new TrainDeparture(validDepartureTime, line, trainNumber, destination, delay, track, comment);
     }
+
+    @Test
+    public void testGetters()
+    {
+        LocalTime departureTime = LocalTime.of(9, 30);
+        String line = "TestLine";
+        String trainNumber = "1771";
+        String destination = "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name";
+        LocalTime delay = LocalTime.parse("01:08");
+        short track = 4;
+        String comment = "Few tickets left";
+        TrainDeparture a = new TrainDeparture(departureTime, line, trainNumber, destination, delay, track, comment);
+
+        System.out.println("Line: " + a.getLine());
+        System.out.println("Comment: " + a.getComment());
+        System.out.println("Train number: " + a.getTrainNumber());
+        System.out.println("Track: " + a.getTrack());
+        System.out.println("Destination: " + a.getDestination());
+        System.out.println("Departure time: " + a.getDepartureTime().toString());
+        System.out.println("Departure time formatted: " + a.getDepartureTimeStr());
+        System.out.println("Departure time in minutes: " + a.getDepartureTimeInMinutes());
+        System.out.println("Delay time: " + a.getDelay().toString());
+        System.out.println("Delay time formatted: " + a.getDelayStr());
+        System.out.println("Delay time in minutes: " + a.getDelayInMinutes());
+        System.out.println("Actual departure time: " + a.getDepartureTimeIncDelay().toString());
+        System.out.println("Actual departure time formatted: " + a.getDepartureTimeIncDelayStr());
+        System.out.println("Actual departure time in minutes: " + a.getDepartureTimeIncDelayInMinutes());
+        System.out.println(a.toString());
+    }
+
+    @Test
+    public void testSetters()
+    {
+        LocalTime departureTime = LocalTime.of(19, 0);
+        String line = "TestLine";
+        String trainNumber = "1771";
+        String destination = "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name";
+        LocalTime delay = LocalTime.parse("01:08");
+        short track = 4;
+        String comment = "Few tickets left";
+        TrainDeparture a = new TrainDeparture(departureTime, line, trainNumber, destination, delay, track, comment);
+
+        a.setTrack((short)8);
+        a.setDelay(LocalTime.of(0, 0));
+        a.setComment("");
+
+        System.out.println(a.toString());
+    }
 }

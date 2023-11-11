@@ -1,5 +1,6 @@
 package edu.ntnu.stud.Wizard764;
 
+import com.sun.nio.sctp.PeerAddressChangeNotification.AddressChangeEvent;
 import java.time.LocalTime;
 /**
  * Represents a train set to depart from the station.
@@ -63,16 +64,12 @@ public class TrainDeparture
         {
             throw new IllegalArgumentException("Train is delayed past current day and is not allowed in system");
         }
-        if(track <= (short)0 && track != (short)-1)
-        {
-            throw new IllegalArgumentException("Track must be a positive number");
-        }
-        this.departureTime = departureTime; //It's not harmful if seconds don't equal 0, so this can be safely copied without checking.
+        setTrack(track); //throws IllegalArgumentException
+        this.departureTime = LocalTime.of(departureTime.getHour(), departureTime.getMinute());
         this.line = line;
         this.trainNumber = trainNumber;
         this.destination = destination;
-        this.delay = delay;
-        this.track = track;
+        this.delay = LocalTime.of(delay.getHour(), delay.getMinute());;
         this.comment = comment;
     }
     /**
@@ -156,8 +153,6 @@ public class TrainDeparture
      * @param trainNumber Unique number identifying a specific train within a day.
      * @param destination The destination of the train.
      * @param delay Delay past departure time if relevant.
-     * @param track The track the train will be departing from.
-     * @param comment String containing any extra or special-case information.
      * @throws IllegalArgumentException if the train is delayed past the current day or if the track is not a positive number.
      */
     public TrainDeparture(LocalTime departureTime, String line, String trainNumber, String destination, LocalTime delay) throws IllegalArgumentException
@@ -176,5 +171,201 @@ public class TrainDeparture
     public TrainDeparture(LocalTime departureTime, String line, String trainNumber, String destination) throws IllegalArgumentException
     {
         this(departureTime, line, trainNumber, destination, ""); //Throws IllegalArgumentException
+    }
+    //Simple getters
+    public LocalTime getDepartureTime()
+    {
+        return departureTime;
+    }
+    public String getLine()
+    {
+        return line;
+    }
+    public String getTrainNumber()
+    {
+        return trainNumber;
+    }
+    public String getDestination()
+    {
+        return destination;
+    }
+    public LocalTime getDelay()
+    {
+        return delay;
+    }
+    public short getTrack()
+    {
+        return track;
+    }
+    public String getComment()
+    {
+        return comment;
+    }
+    //Getters
+    /**
+     * For string-formatted departure time.
+     * @return Returns a string in the format: "hh:mm".
+     */
+    public String getDepartureTimeStr()
+    {
+        return fromLocalTimeToString(departureTime);
+    }
+
+    /**
+     * Useful for comparing timestamps with simple integer manipulation
+     * @return Returns the time of departure in minutes, i.e: 12:04 returns 724 & 03:30 returns 210
+     */
+    public int getDepartureTimeInMinutes()
+    {
+        return departureTime.getHour() * 60 + departureTime.getMinute();
+    }
+    /**
+     * For string-formatted delay.
+     * @return Returns a string in the format: "hh:mm".
+     */
+    public String getDelayStr()
+    {
+        return fromLocalTimeToString(delay);
+    }
+    /**
+     * Useful for comparing timestamps with simple integer manipulation
+     * @return Returns the time of departure in minutes, i.e: 12:04 returns 724 & 03:30 returns 210
+     */
+    public int getDelayInMinutes()
+    {
+        return delay.getHour() * 60 + departureTime.getMinute();
+    }
+    /**
+     * Calculates the actual time of departure including the delay.
+     * @return Returns the actual time of departure
+     */
+    public LocalTime getDepartureTimeIncDelay()
+    {
+        return LocalTime.of(departureTime.getHour() + delay.getHour(), departureTime.getMinute() + delay.getMinute());
+    }
+
+    /**
+     * Calculates the actual time of departure including the delay.
+     * @return Returns the actual time of departure as a String in the format: "hh:mm".
+     */
+    public String getDepartureTimeIncDelayStr()
+    {
+        int minutes = departureTime.getMinute() + delay.getMinute();
+        int hours = departureTime.getHour() + delay.getHour() + minutes / 60;
+        minutes %= 60;
+        return fromLocalTimeToString(LocalTime.of(hours, minutes));
+    }
+    /**
+     * Calculates the actual time of departure including the delay.
+     * @return Returns the actual time of departure as minutes into the day, ie: departure time of 12:10 and delay of 00:05 returns 735.
+     */
+    public int getDepartureTimeIncDelayInMinutes()
+    {
+        return departureTime.getHour() * 60 + departureTime.getMinute() + delay.getHour() * 60 + delay.getMinute();
+    }
+    //Setters
+    public void setDelay(LocalTime delay) throws IllegalArgumentException
+    {
+        this.delay = delay;
+    }
+    /**
+     * Advanced setter, assures track is valid.
+     * @param track The track number to assign the departure.
+     */
+    public void setTrack(short track)
+    {
+        if(track <= (short)0 && track != (short)-1)
+        {
+            throw new IllegalArgumentException("Track must be a positive number");
+        }
+        this.track = track;
+    }
+    /**
+     * track value of -1 signifies it's not assigned
+     */
+    public void unsetTrack()
+    {
+        track = (short)-1;
+    }
+    public void setComment(String comment)
+    {
+        this.comment = comment;
+    }
+
+    /**
+     * Builds a complex multi-line string containing information about the departure in an aesthetic fashion.
+     * @return Returns a string containing all relevant information about the departure formatted over several lines.
+     */
+    @Override
+    public String toString()
+    {
+        //Determine the minimum required length by first determining the length of each line of significant length and using the longest
+        int minimumRequiredLength = Integer.max(46 + line.length() + trainNumber.length(), Integer.max(13 + destination.length(), 9 + comment.length()));
+        int desiredSegmentWidth = 25; //Standard segment width. Each line is 3 segments long
+        //Increase the desiredSegment width until sufficient
+        while(desiredSegmentWidth * 3 < minimumRequiredLength)
+        {
+            desiredSegmentWidth++;
+        }
+        String out = "#".repeat(desiredSegmentWidth * 3 + 4) + "\n";//Add the first line, the "lid", row of "#"
+        //Add the departure time, line and train number. The segments and line is extended to meet the desiredSegmentWidth
+        StringBuilder outLine = new StringBuilder("Departure time: " + getDepartureTimeStr());
+        outLine.append(" ".repeat(desiredSegmentWidth - outLine.length()));
+        outLine.append("Line: ").append(line);
+        outLine.append(" ".repeat(desiredSegmentWidth * 2 - outLine.length()));
+        outLine.append("Train number: ").append(trainNumber);
+        outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
+        out += "# " + outLine + " #\n"; //Add the first line to the output string
+        //Add the destination in a separate line
+        outLine = new StringBuilder("Destination: " + destination);
+        outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
+        out += "# " + outLine + " #\n";
+        //Add delay information if applicable
+        if(getDelayInMinutes() != 0)
+        {
+            outLine = new StringBuilder("Delay: " + getDelayStr());
+            outLine.append(" ".repeat(desiredSegmentWidth - outLine.length()));
+            outLine.append("Actual departure time(including delay): ").append(getDepartureTimeIncDelayStr());
+            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
+            out += "# " + outLine + " #\n";
+        }
+        //Add track information if applicable
+        if(track != -1)
+        {
+            outLine = new StringBuilder("Track: " + track);
+            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
+            out += "# " + outLine + " #\n";
+        }
+        //Add comment is there is one
+        if(!comment.isEmpty())
+        {
+            outLine = new StringBuilder("Comment: " + comment);
+            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
+            out += "# " + outLine + " #\n";
+        }
+        //Add the last line, the "bottom lid", row of "#"
+        out += "#".repeat(desiredSegmentWidth * 3 + 4);
+        return out;
+    }
+
+    /**
+     * Converts a LocalTime into a standardised string format.
+     * @param l The LocalTime object to convert
+     * @return A string in the format: "hh:mm"
+     */
+    private String fromLocalTimeToString(LocalTime l)
+    {
+        String out = "";
+        if(l.getHour() < 10)
+        {
+            out = "0";
+        }
+        out += l.getHour() + ":";
+        if(l.getMinute() < 10)
+        {
+            out += "0";
+        }
+        out += l.getMinute();
+        return out;
     }
 }

@@ -181,15 +181,12 @@ public class TrainDepartureTest
         System.out.println("Track: " + a.getTrack());
         System.out.println("Destination: " + a.getDestination());
         System.out.println("Departure time: " + a.getDepartureTime().toString());
-        System.out.println("Departure time formatted: " + a.getDepartureTimeStr());
         System.out.println("Departure time in minutes: " + a.getDepartureTimeInMinutes());
         System.out.println("Delay time: " + a.getDelay().toString());
-        System.out.println("Delay time formatted: " + a.getDelayStr());
         System.out.println("Delay time in minutes: " + a.getDelayInMinutes());
         System.out.println("Actual departure time: " + a.getDepartureTimeIncDelay().toString());
-        System.out.println("Actual departure time formatted: " + a.getDepartureTimeIncDelayStr());
         System.out.println("Actual departure time in minutes: " + a.getDepartureTimeIncDelayInMinutes());
-        System.out.println(a.toString());
+        System.out.println(a);
     }
 
     @Test
@@ -208,6 +205,7 @@ public class TrainDepartureTest
         a.setDelay(LocalTime.of(0, 0));
         a.setComment("");
 
-        System.out.println(a.toString());
+        System.out.println(a);
+        System.out.println(LocalTime.of(0, 0).toString());
     }
 }

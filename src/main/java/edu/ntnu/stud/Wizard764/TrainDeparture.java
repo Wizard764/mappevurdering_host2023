@@ -202,29 +202,12 @@ public class TrainDeparture
     }
     //Getters
     /**
-     * For string-formatted departure time.
-     * @return Returns a string in the format: "hh:mm".
-     */
-    public String getDepartureTimeStr()
-    {
-        return fromLocalTimeToString(departureTime);
-    }
-
-    /**
      * Useful for comparing timestamps with simple integer manipulation
      * @return Returns the time of departure in minutes, i.e: 12:04 returns 724 & 03:30 returns 210
      */
     public int getDepartureTimeInMinutes()
     {
         return departureTime.getHour() * 60 + departureTime.getMinute();
-    }
-    /**
-     * For string-formatted delay.
-     * @return Returns a string in the format: "hh:mm".
-     */
-    public String getDelayStr()
-    {
-        return fromLocalTimeToString(delay);
     }
     /**
      * Useful for comparing timestamps with simple integer manipulation
@@ -240,19 +223,10 @@ public class TrainDeparture
      */
     public LocalTime getDepartureTimeIncDelay()
     {
-        return LocalTime.of(departureTime.getHour() + delay.getHour(), departureTime.getMinute() + delay.getMinute());
-    }
-
-    /**
-     * Calculates the actual time of departure including the delay.
-     * @return Returns the actual time of departure as a String in the format: "hh:mm".
-     */
-    public String getDepartureTimeIncDelayStr()
-    {
         int minutes = departureTime.getMinute() + delay.getMinute();
         int hours = departureTime.getHour() + delay.getHour() + minutes / 60;
         minutes %= 60;
-        return fromLocalTimeToString(LocalTime.of(hours, minutes));
+        return LocalTime.of(hours, minutes);
     }
     /**
      * Calculates the actual time of departure including the delay.
@@ -308,7 +282,7 @@ public class TrainDeparture
         }, desiredSegmentWidth)).append("##\n");                 //End with ##\n
         //Add the departure time, line and train number.
         out.append("# ").append(CreateInfoLine(new String[]{     //SECOND LINE  beginning with #
-            "Departure time: " + getDepartureTimeStr(),          //1. segment (departure time)
+            "Departure time: " + getDepartureTime().toString(),          //1. segment (departure time)
             "Line: " + line,                                     //2. segment (line)
             "Train number: " + trainNumber                       //3. segment (train number)
         }, desiredSegmentWidth)).append(" #\n");                 //End with ##\n
@@ -321,8 +295,8 @@ public class TrainDeparture
         if(getDelayInMinutes() != 0) //Add delay information if applicable
         {
             out.append("# ").append(CreateInfoLine(new String[]{ //FOURTH LINE  beginning with #
-                "Delay: " + getDelayStr(),                                                  //1. segment (delay)
-                "Actual departure time(including delay): " + getDepartureTimeIncDelayStr(), //2. segment (departure time including delay)
+                "Delay: " + getDelay().toString(),                                                  //1. segment (delay)
+                "Actual departure time(including delay): " + getDepartureTimeIncDelay().toString(), //2. segment (departure time including delay)
                 ""                                                                          //3. segment (empty)
             }, desiredSegmentWidth)).append(" #\n");             //End with ##\n
         }
@@ -378,26 +352,5 @@ public class TrainDeparture
             out.append(" ".repeat(Integer.max(desiredSegmentWidth * (i+1) - out.length(), 0)));
         }
         return out.toString();
-    }
-
-    /**
-     * Converts a LocalTime into a standardised string format.
-     * @param l The LocalTime object to convert
-     * @return A string in the format: "hh:mm"
-     */
-    private String fromLocalTimeToString(LocalTime l)
-    {
-        String out = "";
-        if(l.getHour() < 10)
-        {
-            out = "0";
-        }
-        out += l.getHour() + ":";
-        if(l.getMinute() < 10)
-        {
-            out += "0";
-        }
-        out += l.getMinute();
-        return out;
     }
 }

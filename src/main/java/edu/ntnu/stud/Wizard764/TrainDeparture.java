@@ -324,6 +324,17 @@ public class TrainDeparture
         }, desiredSegmentWidth)).append("##");                   //End with ##
         return out.toString(); //Return completed string
     }
+    /**
+     * Calculates and returns the desired segment width based on the minimum required length
+     * for displaying information in a formatted manner. The minimum required length is determined
+     * by considering the length of each line of significant content and selecting the longest one.
+     * The method takes into account the length of the train number, destination, and comment lines.
+     * The standard segment width is set to 25, where each line is assumed to be 3 segments long.
+     * The method iteratively increases the desired segment width until it is sufficient to accommodate
+     * the minimum required length.
+     *
+     * @return The calculated desired segment width that ensures proper formatting of information.
+     */
     private int CalcDesiredSegmentWidth()
     {
         //Determine the minimum required length by first determining the length of each line of significant length and using the longest

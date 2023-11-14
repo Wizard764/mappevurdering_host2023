@@ -1,6 +1,5 @@
 package edu.ntnu.stud.Wizard764;
 
-import com.sun.nio.sctp.PeerAddressChangeNotification.AddressChangeEvent;
 import java.time.LocalTime;
 /**
  * Represents a train set to depart from the station.
@@ -43,7 +42,7 @@ public class TrainDeparture
     private short track;
     /**
      * String containing any extra or special-case information.
-     * Will ideally function as a catch-all for unforeseen circumstances in use. Might even serve certain needs that develop as the system ages, thus increasing it's lifespan.
+     * Will ideally function as a catch-all for unforeseen circumstances in use. Might even serve certain needs that develop as the system ages, thus increasing its lifespan.
      */
     private String comment;
     /**
@@ -69,7 +68,7 @@ public class TrainDeparture
         this.line = line;
         this.trainNumber = trainNumber;
         this.destination = destination;
-        this.delay = LocalTime.of(delay.getHour(), delay.getMinute());;
+        this.delay = LocalTime.of(delay.getHour(), delay.getMinute());
         this.comment = comment;
     }
     /**
@@ -299,6 +298,60 @@ public class TrainDeparture
     @Override
     public String toString()
     {
+        int desiredSegmentWidth = CalcDesiredSegmentWidth(); //Determine the minimum required length of a segment so a line will fit. At least 25.
+        StringBuilder out = new StringBuilder(); //Initialize output string
+        //Add the first line where all 3 segments are filled with "#".
+        out.append("##").append(CreateInfoLine(new String[]{     //FIRST LINE beginning with ##
+            "#".repeat(desiredSegmentWidth),                     //1. segment (#)
+            "#".repeat(desiredSegmentWidth),                     //2. segment (#)
+            "#".repeat(desiredSegmentWidth)                      //3. segment (#)
+        }, desiredSegmentWidth)).append("##\n");                 //End with ##\n
+        //Add the departure time, line and train number.
+        out.append("# ").append(CreateInfoLine(new String[]{     //SECOND LINE  beginning with #
+            "Departure time: " + getDepartureTimeStr(),          //1. segment (departure time)
+            "Line: " + line,                                     //2. segment (line)
+            "Train number: " + trainNumber                       //3. segment (train number)
+        }, desiredSegmentWidth)).append(" #\n");                 //End with ##\n
+        //Add the destination in a separate line
+        out.append("# ").append(CreateInfoLine(new String[]{     //THIRD LINE  beginning with #
+            "Destination: " + destination,                       //1. segment (destination)
+            "",                                                  //2. segment (empty)
+            ""                                                   //3. segment (empty)
+        }, desiredSegmentWidth)).append(" #\n");                 //End with ##\n
+        if(getDelayInMinutes() != 0) //Add delay information if applicable
+        {
+            out.append("# ").append(CreateInfoLine(new String[]{ //FOURTH LINE  beginning with #
+                "Delay: " + getDelayStr(),                                                  //1. segment (delay)
+                "Actual departure time(including delay): " + getDepartureTimeIncDelayStr(), //2. segment (departure time including delay)
+                ""                                                                          //3. segment (empty)
+            }, desiredSegmentWidth)).append(" #\n");             //End with ##\n
+        }
+        if(track != -1) //Add track information if applicable
+        {
+            out.append("# ").append(CreateInfoLine(new String[]{ //FIFTH LINE  beginning with #
+                "Track: " + track,                               //1. segment (track)
+                "",                                              //2. segment (empty)
+                ""                                               //3. segment (empty)
+            }, desiredSegmentWidth)).append(" #\n");             //End with ##\n
+        }
+        if(!comment.isEmpty()) //Add comment if there is one
+        {
+            out.append("# ").append(CreateInfoLine(new String[]{ //SIXTH LINE  beginning with #
+                "Comment: " + comment,                           //1. segment (comment)
+                "",                                              //2. segment (empty)
+                ""                                               //3. segment (empty)
+            }, desiredSegmentWidth)).append(" #\n");             //End with ##\n
+        }
+        //Add the last line, the "bottom lid", row of "#"
+        out.append("##").append(CreateInfoLine(new String[]{     //LAST LINE  beginning with ##
+            "#".repeat(desiredSegmentWidth),                     //1. segment (#)
+            "#".repeat(desiredSegmentWidth),                     //2. segment (#)
+            "#".repeat(desiredSegmentWidth)                      //3. segment (#)
+        }, desiredSegmentWidth)).append("##");                   //End with ##
+        return out.toString(); //Return completed string
+    }
+    private int CalcDesiredSegmentWidth()
+    {
         //Determine the minimum required length by first determining the length of each line of significant length and using the longest
         int minimumRequiredLength = Integer.max(46 + line.length() + trainNumber.length(), Integer.max(13 + destination.length(), 9 + comment.length()));
         int desiredSegmentWidth = 25; //Standard segment width. Each line is 3 segments long
@@ -307,45 +360,24 @@ public class TrainDeparture
         {
             desiredSegmentWidth++;
         }
-        String out = "#".repeat(desiredSegmentWidth * 3 + 4) + "\n";//Add the first line, the "lid", row of "#"
-        //Add the departure time, line and train number. The segments and line is extended to meet the desiredSegmentWidth
-        StringBuilder outLine = new StringBuilder("Departure time: " + getDepartureTimeStr());
-        outLine.append(" ".repeat(desiredSegmentWidth - outLine.length()));
-        outLine.append("Line: ").append(line);
-        outLine.append(" ".repeat(desiredSegmentWidth * 2 - outLine.length()));
-        outLine.append("Train number: ").append(trainNumber);
-        outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
-        out += "# " + outLine + " #\n"; //Add the first line to the output string
-        //Add the destination in a separate line
-        outLine = new StringBuilder("Destination: " + destination);
-        outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
-        out += "# " + outLine + " #\n";
-        //Add delay information if applicable
-        if(getDelayInMinutes() != 0)
+        return desiredSegmentWidth;
+    }
+    /**
+     * Creates a formatted line by concatenating an array of strings, adjusting spacing for each segment based on the desired segment width.
+     *
+     * @param parts                An array of strings representing the segments to be concatenated.
+     * @param desiredSegmentWidth The desired width for each segment.
+     * @return A formatted line containing concatenated segments with adjusted spacing.
+     */
+    private String CreateInfoLine(String[] parts, int desiredSegmentWidth)
+    {
+        StringBuilder out = new StringBuilder();
+        for(int i = 0; i < parts.length; i++)
         {
-            outLine = new StringBuilder("Delay: " + getDelayStr());
-            outLine.append(" ".repeat(desiredSegmentWidth - outLine.length()));
-            outLine.append("Actual departure time(including delay): ").append(getDepartureTimeIncDelayStr());
-            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
-            out += "# " + outLine + " #\n";
+            out.append(parts[i]);
+            out.append(" ".repeat(Integer.max(desiredSegmentWidth * (i+1) - out.length(), 0)));
         }
-        //Add track information if applicable
-        if(track != -1)
-        {
-            outLine = new StringBuilder("Track: " + track);
-            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
-            out += "# " + outLine + " #\n";
-        }
-        //Add comment is there is one
-        if(!comment.isEmpty())
-        {
-            outLine = new StringBuilder("Comment: " + comment);
-            outLine.append(" ".repeat(desiredSegmentWidth * 3 - outLine.length()));
-            out += "# " + outLine + " #\n";
-        }
-        //Add the last line, the "bottom lid", row of "#"
-        out += "#".repeat(desiredSegmentWidth * 3 + 4);
-        return out;
+        return out.toString();
     }
 
     /**

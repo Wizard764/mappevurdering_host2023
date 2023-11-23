@@ -67,7 +67,10 @@ public class TrainDeparture {
                         String trainNumber, String destination,
                         LocalTime delay, short track,
                         String comment) throws IllegalArgumentException {
-    if (getDepartureTimeInMinutes() > 24 * 60) {
+    int depTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    int delayMins = delay.getHour() * 60 + delay.getMinute();
+    int actDepTimeMins = depTimeMins + delayMins;
+    if (actDepTimeMins >= 24 * 60) {
       String e = "Train is delayed past current day and is not allowed in system";
       throw new IllegalArgumentException(e);
     }

@@ -267,7 +267,7 @@ public class TrainDeparture {
    * @return Returns the time of departure in minutes, i.e: 12:04 returns 724 & 03:30 returns 210
    */
   public int getDelayInMinutes() {
-    return delay.getHour() * 60 + departureTime.getMinute();
+    return delay.getHour() * 60 + delay.getMinute();
   }
 
   /**

@@ -1,7 +1,5 @@
 package edu.ntnu.stud.Wizard764;
 
-import java.time.LocalTime;
-
 /** This is the main class for the train dispatch application. */
 public class TrainDispatchApp {
   /**

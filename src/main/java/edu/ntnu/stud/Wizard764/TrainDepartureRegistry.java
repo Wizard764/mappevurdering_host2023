@@ -99,8 +99,15 @@ public class TrainDepartureRegistry {
   /**
    * Private method to sort the list of departures by time using DepartureComparator.
    */
-  private void sortDeparturesByTime() {
+  public void sortDeparturesByTime() {
     departures.sort(new DepartureComparator());
+  }
+
+  /**
+   * Private method to sort the list of departures by actual departure time using DepartureComparatorIncDelay.
+   */
+  public void sortDeparturesByTimeIncDelay() {
+    departures.sort(new DepartureComparatorIncDelay());
   }
 
   /**
@@ -111,7 +118,6 @@ public class TrainDepartureRegistry {
    */
   @Override
   public String toString() {
-    sortDeparturesByTime();
     StringBuilder out = new StringBuilder("Complete list of departures:");
     for (TrainDeparture departure : departures) {
       out.append("\n").append(departure.toString());

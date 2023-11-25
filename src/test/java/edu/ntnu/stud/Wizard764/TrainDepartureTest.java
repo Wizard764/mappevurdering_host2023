@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
 
-public class TrainDepartureTest
-{
+public class TrainDepartureTest {
     @Test
     public void testValidTrainDeparture() {
         // Valid TrainDeparture construction
@@ -164,8 +163,7 @@ public class TrainDepartureTest
     }
 
     @Test
-    public void testGetters()
-    {
+    public void testGetters() {
         LocalTime departureTime = LocalTime.of(9, 30);
         String line = "TestLine";
         String trainNumber = "1771";
@@ -190,8 +188,7 @@ public class TrainDepartureTest
     }
 
     @Test
-    public void testSetters()
-    {
+    public void testSetters() {
         LocalTime departureTime = LocalTime.of(19, 0);
         String line = "TestLine";
         String trainNumber = "1771";

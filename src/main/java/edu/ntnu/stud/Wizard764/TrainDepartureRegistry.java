@@ -1,6 +1,7 @@
 package edu.ntnu.stud.Wizard764;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The TrainDepartureRegistry class represents a registry for train departures.
@@ -19,6 +20,16 @@ public class TrainDepartureRegistry {
    */
   TrainDepartureRegistry() {
     departures = new ArrayList<>();
+  }
+
+  /**
+   * Initializes TrainDepartureRegistry by list of departures.
+   *
+   * @param departures Array of departures to add to the registry.
+   */
+  TrainDepartureRegistry(TrainDeparture[] departures) {
+    this();
+    this.departures.addAll(Arrays.asList(departures));
   }
 
   /**

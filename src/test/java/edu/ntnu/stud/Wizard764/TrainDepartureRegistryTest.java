@@ -13,6 +13,17 @@ public class TrainDepartureRegistryTest {
   }
 
   @Test
+  public void testConstructor() {
+    TrainDeparture[] departures = new TrainDeparture[]{
+      new TrainDeparture(LocalTime.of(12, 31), "F4", "AR762", "Dest"),
+      new TrainDeparture(LocalTime.of(8, 15), "A1", "AR123", "Dest"),
+      new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Dest"),
+      new TrainDeparture(LocalTime.of(11, 20), "C3", "AR789", "Stavanger"),
+      new TrainDeparture(LocalTime.of(13, 0), "D4", "AR101", "Kristiansand")};
+    TrainDepartureRegistry tdr1 = new TrainDepartureRegistry(departures);
+  }
+
+  @Test
   public void addDuplicateDepartureTest() {
     try {
       TrainDepartureRegistry tdr = new TrainDepartureRegistry();

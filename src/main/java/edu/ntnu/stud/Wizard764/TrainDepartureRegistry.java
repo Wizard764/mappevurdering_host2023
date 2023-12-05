@@ -1,5 +1,6 @@
 package edu.ntnu.stud.Wizard764;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -94,6 +95,24 @@ public class TrainDepartureRegistry {
       }
     }
     return tempResult.toArray(new TrainDeparture[0]);
+  }
+
+  /**
+   * Deletes departures that are past as of the time given as parameter.
+   * METACOMMENT-NOTE: In actual use it would make sense for this method to fetch the current time,
+   *     but the task description asks for time to be adjusted manually.
+   * Final version will be private. Public for test purposes.
+   *
+   * @param currentTime The current time.
+   */
+  public void deleteOldDepartures(LocalTime currentTime) {
+    sortDeparturesByTimeIncDelay();
+    final int currentTimeMins = currentTime.getHour() * 60 + currentTime.getMinute();
+    int currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
+    while (currentDepActDepartureTimeMins <= currentTimeMins) {
+      departures.remove(0);
+      currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
+    }
   }
 
   /**

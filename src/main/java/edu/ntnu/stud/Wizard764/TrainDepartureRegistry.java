@@ -104,7 +104,8 @@ public class TrainDepartureRegistry {
   }
 
   /**
-   * Private method to sort the list of departures by actual departure time using DepartureComparatorIncDelay.
+   * Private method to sort the list of departures by actual departure time
+   * using DepartureComparatorIncDelay.
    */
   public void sortDeparturesByTimeIncDelay() {
     departures.sort(new DepartureComparatorIncDelay());

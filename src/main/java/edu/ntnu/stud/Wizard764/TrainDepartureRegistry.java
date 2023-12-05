@@ -131,6 +131,15 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Gets number of departures stored in the registry.
+   *
+   * @return Number of TrainDeparture objects stored in the registry.
+   */
+  public int getNoDepartures() {
+    return departures.size();
+  }
+
+  /**
    * Overrides the default toString() method to provide a formatted string
    * representation of the complete list of departures sorted by time.
    *

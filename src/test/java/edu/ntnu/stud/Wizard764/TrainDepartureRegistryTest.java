@@ -3,6 +3,12 @@ package edu.ntnu.stud.Wizard764;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Test-class for TrainDepartureRegistry
+ * Tests class methods, including negative tests where applicable.
+ * NOTE: The class takes TrainDeparture objects as parameters in some cases.
+ * Negative testing here will be done in the TrainDeparture class.
+ */
 public class TrainDepartureRegistryTest {
   @Test
   public void addValidDepartureTest() {
@@ -36,12 +42,25 @@ public class TrainDepartureRegistryTest {
   }
 
   @Test
-  public void getDepartureTest() {
+  public void getExistingDepartureTest() {
     TrainDepartureRegistry tdr = new TrainDepartureRegistry();
     tdr.addDeparture(new TrainDeparture(LocalTime.of(12, 31), "F4", "AR762", "Trondheim"));
     tdr.addDeparture(new TrainDeparture(LocalTime.of(8, 15), "A1", "AR123", "Oslo"));
     tdr.addDeparture(new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Bergen"));
     System.out.println(tdr.getDeparture("AR456"));
+  }
+
+  @Test
+  public void getNonexistentDepartureTest() {
+    TrainDepartureRegistry tdr = new TrainDepartureRegistry();
+    tdr.addDeparture(new TrainDeparture(LocalTime.of(12, 31), "F4", "AR762", "Trondheim"));
+    tdr.addDeparture(new TrainDeparture(LocalTime.of(8, 15), "A1", "AR123", "Oslo"));
+    tdr.addDeparture(new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Bergen"));
+    try {
+      System.out.println(tdr.getDeparture("Nonexistent ID"));
+    } catch(Exception e) {
+      System.out.println(e.getMessage());
+    }
   }
 
   @Test
@@ -59,6 +78,11 @@ public class TrainDepartureRegistryTest {
     tdr.addDeparture(new TrainDeparture(LocalTime.of(17, 40), "G7", "AR890", "Alesund"));
     tdr.addDeparture(new TrainDeparture(LocalTime.of(22, 25), "J10", "AR333", "Bodø"));
     TrainDeparture[] deps = tdr.getDeparturesByDestination("Trondheim");
+    System.out.println("Fetched departures:");
+    for(TrainDeparture t : deps) {
+      System.out.println(t);
+    }
+    deps = tdr.getDeparturesByDestination("Nonexistent destination");
     System.out.println("Fetched departures:");
     for(TrainDeparture t : deps) {
       System.out.println(t);

@@ -108,7 +108,7 @@ public class TrainDepartureRegistryTest {
     tdr.addDeparture(new TrainDeparture(LocalTime.of(17, 40), "G7", "AR890", "Alesund"));
     tdr.addDeparture(new TrainDeparture(LocalTime.of(22, 25), "J10", "AR333", "Bodø"));
     tdr.sortDeparturesByTime();
-    System.out.println(tdr.toString()); //This will trigger sorting of the departures internally.
+    System.out.println(tdr); //This will trigger sorting of the departures internally.
   }
 
   @Test
@@ -126,7 +126,7 @@ public class TrainDepartureRegistryTest {
     tdr.addDeparture(new TrainDeparture(LocalTime.of(17, 40), "G7", "AR890", "Alesund", LocalTime.of(0, 0)));
     tdr.addDeparture(new TrainDeparture(LocalTime.of(22, 25), "J10", "AR333", "Bodø", LocalTime.of(0, 0)));
     tdr.sortDeparturesByTimeIncDelay();
-    System.out.println(tdr.toString()); //This will trigger sorting of the departures internally.
+    System.out.println(tdr); //This will trigger sorting of the departures internally.
   }
 
   @Test

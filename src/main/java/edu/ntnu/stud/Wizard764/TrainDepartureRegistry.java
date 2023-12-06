@@ -1,5 +1,6 @@
 package edu.ntnu.stud.Wizard764;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -97,6 +98,24 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Deletes departures that are past as of the time given as parameter.
+   * METACOMMENT-NOTE: In actual use it would make sense for this method to fetch the current time,
+   *     but the task description asks for time to be adjusted manually.
+   * Final version will be private. Public for test purposes.
+   *
+   * @param currentTime The current time.
+   */
+  public void deleteOldDepartures(LocalTime currentTime) {
+    sortDeparturesByTimeIncDelay();
+    final int currentTimeMins = currentTime.getHour() * 60 + currentTime.getMinute();
+    int currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
+    while (currentDepActDepartureTimeMins <= currentTimeMins) {
+      departures.remove(0);
+      currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
+    }
+  }
+
+  /**
    * Private method to sort the list of departures by time using DepartureComparator.
    */
   public void sortDeparturesByTime() {
@@ -104,10 +123,20 @@ public class TrainDepartureRegistry {
   }
 
   /**
-   * Private method to sort the list of departures by actual departure time using DepartureComparatorIncDelay.
+   * Private method to sort the list of departures by actual departure time
+   * using DepartureComparatorIncDelay.
    */
   public void sortDeparturesByTimeIncDelay() {
     departures.sort(new DepartureComparatorIncDelay());
+  }
+
+  /**
+   * Gets number of departures stored in the registry.
+   *
+   * @return Number of TrainDeparture objects stored in the registry.
+   */
+  public int getNoDepartures() {
+    return departures.size();
   }
 
   /**

@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
+  private boolean mainRunningFlag = true;
 
   /**
    * Constructor to initialize scanner.
@@ -40,7 +41,9 @@ public class UserInterface {
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
 
-    runMainMenu();
+    while (mainRunningFlag) {
+      runMainMenu();
+    }
   }
 
   /**
@@ -63,12 +66,12 @@ public class UserInterface {
       case 4 -> System.out.println("TBA. Toggles comments");
       case 5 -> System.out.println("TBA. Searches for departure");
       case 6 -> System.out.println("TBA. Modifies departure");
-      case 7 -> {
-        return; //Will exit program immidiately, even if code is added below this switch statement.
-      }
+      case 7 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
-    int i = 0;
+    if (mainRunningFlag) {
+      pressEnterToContinue();
+    }
   }
 
   /**

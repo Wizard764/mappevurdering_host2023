@@ -1,7 +1,6 @@
 package edu.ntnu.stud.Wizard764;
 
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalTime;
 
 public class TrainDepartureTest {
@@ -32,6 +31,7 @@ public class TrainDepartureTest {
             String comment = "TestComment";
 
             new TrainDeparture(departureTime, line, trainNumber, destination, delay, track, comment);
+            throw new Error("Test failed. Invalid departure constructed.");
         } catch (IllegalArgumentException e) {
             System.out.println("Exception Message: " + e.getMessage());
         }
@@ -50,6 +50,7 @@ public class TrainDepartureTest {
             String comment = "TestComment";
 
             new TrainDeparture(departureTime, line, trainNumber, destination, delay, track, comment);
+            throw new Error("Test failed. Track constructed with invalid track.");
         } catch (IllegalArgumentException e) {
             System.out.println("Exception Message: " + e.getMessage());
         }
@@ -141,6 +142,7 @@ public class TrainDepartureTest {
             String comment = "TestComment";
 
             new TrainDeparture(invalidDepartureTime, line, trainNumber, destination, delay, track, comment);
+            throw new Error("Test failed. Departure constructed with invalid time formatting.");
         } catch (Exception e) {
             System.out.println("Exception Message: " + e.getMessage());
         }

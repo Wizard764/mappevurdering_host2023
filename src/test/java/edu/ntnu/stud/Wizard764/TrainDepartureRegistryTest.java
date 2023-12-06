@@ -36,6 +36,7 @@ public class TrainDepartureRegistryTest {
       tdr.addDeparture(new TrainDeparture(LocalTime.of(12, 31), "F4", "A1", "Trondheim"));
       tdr.addDeparture(new TrainDeparture(LocalTime.of(8, 15), "A1", "A1", "Oslo"));
       tdr.addDeparture(new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Bergen"));
+      throw new Error("Test failed. Duplicate departures added.");
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
@@ -58,7 +59,8 @@ public class TrainDepartureRegistryTest {
     tdr.addDeparture(new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Bergen"));
     try {
       System.out.println(tdr.getDeparture("Nonexistent ID"));
-    } catch(Exception e) {
+      throw new Error("Test failed. Nonexistent ID returned results.");
+    } catch(IllegalArgumentException e) {
       System.out.println(e.getMessage());
     }
   }
@@ -82,11 +84,13 @@ public class TrainDepartureRegistryTest {
     for(TrainDeparture t : deps) {
       System.out.println(t);
     }
+    assert(deps.length == 4);
     deps = tdr.getDeparturesByDestination("Nonexistent destination");
     System.out.println("Fetched departures:");
     for(TrainDeparture t : deps) {
       System.out.println(t);
     }
+    assert(deps.length == 0);
   }
 
   @Test
@@ -133,17 +137,9 @@ public class TrainDepartureRegistryTest {
     tdr.addDeparture(new TrainDeparture(LocalTime.of(9, 45), "B2", "AR456", "Bergen"));
 
     String id = "AR762";
-    if(tdr.departureExists(id)) {
-      System.out.println("Train departure " + id + " exists [Expected result]");
-    } else {
-      throw new Exception("Test failed.");
-    }
+    assert(tdr.departureExists(id));
     id = "AR76";
-    if(tdr.departureExists(id)) {
-      throw new Exception("Test failed.");
-    } else {
-      System.out.println("Train departure " + id + " does not exist  [Expected result]");
-    }
+    assert(!tdr.departureExists(id));
   }
 
   @Test
@@ -163,5 +159,6 @@ public class TrainDepartureRegistryTest {
 
     tdr.deleteOldDepartures(LocalTime.of(15, 0));
     System.out.println(tdr);
+    assert(tdr.getNoDepartures() == 6);
   }
 }

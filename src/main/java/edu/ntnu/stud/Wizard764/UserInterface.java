@@ -39,7 +39,19 @@ public class UserInterface {
       tdr.addDeparture(new TrainDeparture(departureTimes[i], lines[i],
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
-    printInformationBoard();
+
+    //Test code for main menu.
+    String[] testOpts = {"Select an option:",
+                         "Display information board",
+                         "Do a flip",
+                         "How about a cookie?"};
+    int chosen = runOptionBasedMenu(testOpts);
+    switch (chosen) {
+      case 1 -> printInformationBoard();
+      case 2 -> System.out.println("Did a flip.");
+      case 3 -> System.out.println("Here's a cookie! :)");
+      default -> throw new Error("Error. Default condition executed.");
+    }
   }
 
   /**
@@ -76,5 +88,38 @@ public class UserInterface {
         System.out.println(error);
       }
     }
+  }
+
+  /**
+   * Presents a menu of simple options to the user and returns the users chosen option as an int.
+   *
+   * @param content A string array where item 0 is the title of the menu.
+   *                Subsequent items are options the user may select.
+   * @return Returns the option the user selected as an integer.
+   * @throws IllegalArgumentException Throws exception if there are no options i menu.
+   *                                  At least one is required.
+   */
+  private int runOptionBasedMenu(String[] content) throws IllegalArgumentException {
+    if (content.length < 2) {
+      throw new IllegalArgumentException("At least one option is required");
+    }
+    String prompt = generateOptionBasedMenu(content);
+    String error = "Please enter a valid option between 1 and " + (content.length - 1);
+    return inputInt(prompt, error, 1, content.length - 1);
+  }
+
+  /**
+   * Generates a string containing information presented to the user in an option-based menu.
+   *
+   * @param content A string array where item 0 is the title of the menu.
+   *                Subsequent items are options the user may select.
+   * @return Returns formatted string containing menu title and options.
+   */
+  private String generateOptionBasedMenu(String[] content) {
+    StringBuilder out = new StringBuilder(content[0]);
+    for (int i = 1; i < content.length; i++) {
+      out.append("\n").append(i).append(". ").append(content[i]);
+    }
+    return out.toString();
   }
 }

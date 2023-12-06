@@ -1,15 +1,21 @@
 package edu.ntnu.stud.Wizard764;
 
 import java.time.LocalTime;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 /**
  * Class to handle the user interface as well as high level program flow.
  */
 public class UserInterface {
   private TrainDepartureRegistry tdr;
+  private java.util.Scanner sc;
 
-  UserInterface() {
-
+  /**
+   * Constructor to initialize scanner.
+   */
+  public UserInterface() {
+    sc = new Scanner(System.in);
   }
 
   public void init() {
@@ -43,5 +49,32 @@ public class UserInterface {
   public void printInformationBoard() {
     tdr.sortDeparturesByTime();
     System.out.println(tdr);
+  }
+
+  /**
+   * Takes numeric input from user using Scanner.
+   *
+   * @param prompt The prompt to present the user.
+   * @param error The error to present user when input is wrong format.
+   * @param min Minimum acceptable integer value.
+   * @param max Maximum acceptable integer value.
+   * @return Returns integer from the user in the interval specified.
+   */
+  private int inputInt(String prompt, String error, int min, int max) {
+    while (true) { //Keep asking until valid input is given
+      try {
+        System.out.println(prompt);
+        int temp = sc.nextInt();
+        if (temp >= min && temp <= max) {
+          return temp;
+        }
+        throw new IllegalArgumentException();
+      } catch (InputMismatchException e) { //Triggered when input is not integer.
+        System.out.println(error);
+        sc.next(); //"Clean" scanner if input is wrong.
+      } catch (IllegalArgumentException e) { //Triggered when int is not in specified range.
+        System.out.println(error);
+      }
+    }
   }
 }

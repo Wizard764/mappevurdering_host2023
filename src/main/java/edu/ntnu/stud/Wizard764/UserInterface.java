@@ -40,7 +40,13 @@ public class UserInterface {
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
 
-    //Test code for main menu.
+    runMainMenu();
+  }
+
+  /**
+   * Runs the main menu that the user lands on when the program is run.
+   */
+  private void runMainMenu() {
     String[] testOpts = {"Select an option:",
                          "Display information board",
                          "Do a flip",

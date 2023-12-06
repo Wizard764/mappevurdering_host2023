@@ -81,6 +81,21 @@ public class UserInterface {
   }
 
   /**
+   * Pauses the program until the user presses ENTER.
+   * TODO: Figure out if this method can be refactored to a prettier form.
+   */
+  private void pressEnterToContinue() {
+    System.out.println("Press ENTER to return to main menu");
+    try {
+      while (System.in.available() == 0){}
+      while (System.in.available() > 0) {
+        System.in.read();
+      }
+      sc.nextLine();
+    } catch (Exception e) { /*try-catch needed to utilize System.in.available()*/ }
+  }
+
+  /**
    * Takes numeric input from user using Scanner.
    *
    * @param prompt The prompt to present the user.

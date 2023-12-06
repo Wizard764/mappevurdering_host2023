@@ -48,16 +48,27 @@ public class UserInterface {
    */
   private void runMainMenu() {
     String[] testOpts = {"Select an option:",
-                         "Display information board",
-                         "Do a flip",
-                         "How about a cookie?"};
+                         "Display departures",
+                         "Add departure",
+                         "Set system time",
+                         "Toggle comments (CURRENT:TBA)",
+                         "Search for departure (by train number or destination)",
+                         "Modify departure (comment, delay, track)",
+                         "Exit application"};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
-      case 2 -> System.out.println("Did a flip.");
-      case 3 -> System.out.println("Here's a cookie! :)");
-      default -> throw new Error("Error. Default condition executed.");
+      case 2 -> System.out.println("TBA. Adds departure");
+      case 3 -> System.out.println("TBA. Sets system time");
+      case 4 -> System.out.println("TBA. Toggles comments");
+      case 5 -> System.out.println("TBA. Searches for departure");
+      case 6 -> System.out.println("TBA. Modifies departure");
+      case 7 -> {
+        return; //Will exit program immidiately, even if code is added below this switch statement.
+      }
+      default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
+    int i = 0;
   }
 
   /**

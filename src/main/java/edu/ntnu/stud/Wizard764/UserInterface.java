@@ -126,6 +126,25 @@ public class UserInterface {
   }
 
   /**
+   * Takes a binary decision from the user.
+   *
+   * @return True if user selects yes, false if no.
+   */
+  private boolean inputBinaryDecision() {
+    while (true) {
+      System.out.print(("y/n: "));
+      String in = sc.nextLine().toLowerCase();
+      if (in.equals("y")) {
+        return true;
+      } else if (in.equals("n")) {
+        return false;
+      }
+      System.out.println("Please enter either 'y' for yes or 'n' for no"
+                       + "(without quotation marks).");
+    }
+  }
+
+  /**
    * Takes user inputted track-number (short).
    * TODO: Add max limit for track number as member variable.
    *

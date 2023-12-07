@@ -214,6 +214,43 @@ public class UserInterface {
   }
 
   /**
+   * Takes delay from the user in the correct format.
+   *
+   * @param departureTime Departure time of the departure that delay is assigned to.
+   *                      This is used to avoid departure times spilling into next day.
+   *                      If desirable this can be set to LocalTime.of(0, 0),
+   *                      in which case this method gets a LocalTime object from the user
+   *                      and returns LocalTime.of(0, 0) if input is empty.
+   * @param prompt Presented to the user before input is taken.
+   * @param error Presented to the user if input is invalid.
+   * @return Returns LocalTime object that together with departureTime
+   *         provided does not exceed 23:59.
+   */
+  private LocalTime inputDelay(LocalTime departureTime, String prompt, String error) {
+    LocalTime delay;
+    int depTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    while (true) {
+      try {
+        System.out.print(prompt);
+        String in = sc.nextLine();
+        if (in.isEmpty()) {
+          return LocalTime.of(0, 0);
+        }
+        delay = LocalTime.parse(in);
+        int actDepTimeMins = depTimeMins + delay.getHour() * 60 + delay.getMinute();
+        if (actDepTimeMins >= 60 * 24) {
+          throw new IllegalArgumentException("Delay is too long. Departure is past day.");
+        }
+        return delay;
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      } catch (DateTimeParseException e) {
+        System.out.println(error);
+      }
+    }
+  }
+
+  /**
    * Presents a menu of simple options to the user and returns the users chosen option as an int.
    *
    * @param content A string array where item 0 is the title of the menu.

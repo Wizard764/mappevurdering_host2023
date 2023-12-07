@@ -94,7 +94,6 @@ public class UserInterface {
       while (System.in.available() > 0) {
         System.in.read();
       }
-      sc.nextLine();
     } catch (Exception e) { /*try-catch needed to utilize System.in.available()*/ }
   }
 
@@ -112,6 +111,7 @@ public class UserInterface {
       try {
         System.out.println(prompt);
         int temp = sc.nextInt();
+        sc.nextLine();
         if (temp >= min && temp <= max) {
           return temp;
         }

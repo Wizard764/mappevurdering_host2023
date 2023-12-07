@@ -90,8 +90,8 @@ public class UserInterface {
   private void pressEnterToContinue() {
     System.out.println("Press ENTER to return to main menu");
     try {
-      while (System.in.available() == 0){}
-      while (System.in.available() > 0) {
+      while (System.in.available() == 0){} //Runs (waits) until there is input from user.
+      while (System.in.available() > 0) { //Consumes all input
         System.in.read();
       }
     } catch (Exception e) { /*try-catch needed to utilize System.in.available()*/ }
@@ -137,7 +137,7 @@ public class UserInterface {
       try {
         System.out.print(prompt);
         return LocalTime.parse(sc.nextLine());
-      } catch(DateTimeParseException e) {
+      } catch (DateTimeParseException e) {
         System.out.println(error);
       }
     }

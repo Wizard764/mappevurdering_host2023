@@ -1,6 +1,7 @@
 package edu.ntnu.stud.Wizard764;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -61,7 +62,7 @@ public class UserInterface {
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
-      case 2 -> System.out.println("TBA. Adds departure");
+      case 2 -> addDeparture();
       case 3 -> System.out.println("TBA. Sets system time");
       case 4 -> System.out.println("TBA. Toggles comments");
       case 5 -> System.out.println("TBA. Searches for departure");
@@ -71,6 +72,78 @@ public class UserInterface {
     }
     if (mainRunningFlag) {
       pressEnterToContinue();
+    }
+  }
+
+  /**
+   * Wrapper for recursive method addDeparture(int).
+   * Called to add first departure in a "set".
+   */
+  private void addDeparture() {
+    addDeparture(0);
+  }
+
+  /**
+   * Adds a departure to the registry with user input.
+   * Supports a recursive structure for adding several departures.
+   *
+   * @param noDepsAdded Number of departures already added. Used for recursion.
+   */
+  private void addDeparture(int noDepsAdded) {
+    String prompt = "Enter departure time(Format: 'HH:MM'): ";
+    String error = "You must enter departure time in the following format: "
+                 + "'12:34' (without quotation marks))";
+    final LocalTime departureTime = inputLocalTime(prompt, error);
+
+    prompt = "Enter the train line: ";
+    error = "Departure must have a line.";
+    final String line = inputEnforceNotEmpty(prompt, error);
+
+    prompt = "Enter the train number: ";
+    error = "Departure must have a unique train number.";
+    final String trainNumber = inputTrainNumberEnforceUniqueness(prompt, error);
+
+    prompt = "Enter the destination: ";
+    error = "Departure must have a destination.";
+    final String destination = inputEnforceNotEmpty(prompt, error);
+
+    prompt = "Enter delay(can be empty): ";
+    error = "You must enter a delay in the following format: "
+            + "'12:34' (without quotation marks))";
+    final LocalTime delay = inputDelay(departureTime, prompt, error);
+
+    prompt = "Enter track(can be empty): ";
+    error = "You must enter a positive track number below " + Short.MAX_VALUE + ".";
+    final short track = inputTrack(prompt, error);
+
+    System.out.println("Enter comment(if applicable/can be empty): ");
+    String comment = sc.nextLine();
+
+    TrainDeparture newDeparture = new TrainDeparture(departureTime, line, trainNumber,
+                                                     destination, delay, track, comment);
+
+    System.out.println("Confirm the information below is correct: ");
+    System.out.println(newDeparture);
+    if (inputBinaryDecision()) {
+      tdr.addDeparture(newDeparture);
+      noDepsAdded++; //Track number of departures added.
+      System.out.println("SUCCESS: new departure added.");
+      System.out.println("Would you like to add another departure?"
+              + " If no, you will be returned to the main menu.");
+      if (inputBinaryDecision()) {
+        addDeparture(noDepsAdded); //Recursive method call.
+      } else {
+        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+      }
+    } else {
+      System.out.println("Would you like to re-enter the information for the departure?"
+                       + " If no, you will be returned to the main menu.");
+      if (inputBinaryDecision()) {
+        addDeparture();
+      } else {
+        System.out.println("Operation cancelled. No departure was added.");
+        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+      }
     }
   }
 

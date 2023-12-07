@@ -153,6 +153,28 @@ public class UserInterface {
   }
 
   /**
+   * Gets string input that is not empty.
+   *
+   * @param prompt Presented to the user before input is taken.
+   * @param error Presented to the user when input is empty.
+   * @return Returns string from user.
+   */
+  private String inputEnforceNotEmpty(String prompt, String error) {
+    while (true) {
+      try {
+        System.out.print(prompt);
+        String in = sc.nextLine();
+        if (in.isEmpty()) {
+          throw new InputMismatchException("Cannot be empty.");
+        }
+        return in;
+      } catch (InputMismatchException e) {
+        System.out.println(error);
+      }
+    }
+  }
+
+  /**
    * Constructs a LocalTime object from user input. Runs until user enter correctly formatted data.
    *
    * @param prompt String presented to the user before input is taken.

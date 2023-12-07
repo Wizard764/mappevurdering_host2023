@@ -126,6 +126,33 @@ public class UserInterface {
   }
 
   /**
+   * Takes user inputted track-number (short).
+   * TODO: Add max limit for track number as member variable.
+   *
+   * @param prompt Presented to the user before input is taken.
+   * @param error Presented to the user when input is invalid.
+   * @return Returns a valid track number.
+   */
+  private short inputTrack(String prompt, String error) {
+    while (true) { //Keep asking until valid input is given
+      try {
+        System.out.print(prompt);
+        String in = sc.nextLine(); //Take user input.
+        if (in.isEmpty()) {
+          return -1;
+        }
+        short temp = Short.parseShort(in); //Attempt to parse as short.
+        if (temp == -1 || temp >= 1) { //If valid
+          return temp;
+        }
+        throw new IllegalArgumentException();
+      } catch (Exception e) {
+        System.out.println(error);
+      }
+    }
+  }
+
+  /**
    * Constructs a LocalTime object from user input. Runs until user enter correctly formatted data.
    *
    * @param prompt String presented to the user before input is taken.

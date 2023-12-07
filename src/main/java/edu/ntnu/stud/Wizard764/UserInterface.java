@@ -153,6 +153,27 @@ public class UserInterface {
   }
 
   /**
+   * Gets unique train number from user.
+   *
+   * @param prompt Presented to the user before input is taken.
+   * @param error Presented to the user when input is empty or duplicate.
+   * @return Returns unique train number from user.
+   */
+  private String inputTrainNumberEnforceUniqueness(String prompt, String error) {
+    while (true) {
+      try {
+        String trainNumber = inputEnforceNotEmpty(prompt, error);
+        if (tdr.departureExists(trainNumber)) {
+          throw new IllegalArgumentException("Duplicate departure.");
+        }
+        return trainNumber;
+      } catch (IllegalArgumentException e) {
+        System.out.println(error);
+      }
+    }
+  }
+
+  /**
    * Gets string input that is not empty.
    *
    * @param prompt Presented to the user before input is taken.

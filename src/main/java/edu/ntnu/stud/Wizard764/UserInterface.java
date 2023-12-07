@@ -110,8 +110,8 @@ public class UserInterface {
     while (true) { //Keep asking until valid input is given
       try {
         System.out.print(prompt);
-        int temp = sc.nextInt();
-        sc.nextLine();
+        int temp = sc.nextInt(); //Take Integer from scanner.
+        sc.nextLine(); //Consume newline character.
         if (temp >= min && temp <= max) {
           return temp;
         }
@@ -136,8 +136,8 @@ public class UserInterface {
     while (true) {
       try {
         System.out.print(prompt);
-        return LocalTime.parse(sc.nextLine());
-      } catch (DateTimeParseException e) {
+        return LocalTime.parse(sc.nextLine()); //Take user input.
+      } catch (DateTimeParseException e) { //Handle wrong input format.
         System.out.println(error);
       }
     }

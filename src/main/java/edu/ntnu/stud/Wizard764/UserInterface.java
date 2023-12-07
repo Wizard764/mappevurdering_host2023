@@ -126,6 +126,24 @@ public class UserInterface {
   }
 
   /**
+   * Constructs a LocalTime object from user input. Runs until user enter correctly formatted data.
+   *
+   * @param prompt String presented to the user before input is taken.
+   * @param error String presented to the user when input is in the wrong format.
+   * @return LocalTime object from user input.
+   */
+  private LocalTime inputLocalTime(String prompt, String error) {
+    while (true) {
+      try {
+        System.out.print(prompt);
+        return LocalTime.parse(sc.nextLine());
+      } catch(DateTimeParseException e) {
+        System.out.println(error);
+      }
+    }
+  }
+
+  /**
    * Presents a menu of simple options to the user and returns the users chosen option as an int.
    *
    * @param content A string array where item 0 is the title of the menu.

@@ -57,7 +57,7 @@ public class UserInterface {
                          "Toggle comments (CURRENT:TBA)",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
-                         "Exit application"};
+                         "Exit application\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
@@ -109,7 +109,7 @@ public class UserInterface {
   private int inputInt(String prompt, String error, int min, int max) {
     while (true) { //Keep asking until valid input is given
       try {
-        System.out.println(prompt);
+        System.out.print(prompt);
         int temp = sc.nextInt();
         sc.nextLine();
         if (temp >= min && temp <= max) {

@@ -141,10 +141,11 @@ public class TrainDepartureRegistry {
 
   /**
    * Sets comment state for each departure in registry.
+   *
    * @param state New comment state.
    */
   public void setCommentState(boolean state) {
-      departures.forEach(t -> t.setCommentState(state));
+    departures.forEach(t -> t.setCommentState(state));
   }
 
   /**

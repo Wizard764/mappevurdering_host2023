@@ -398,7 +398,7 @@ public class TrainDeparture {
                   desiredSegmentWidth))
           .append(" #\n"); // End with ##\n
     }
-    if (!comment.isEmpty()) { // Add comment if there is one
+    if (!comment.isEmpty() && commentState) { // Add comment if there is one
       out.append("# ")
           .append(
               createInfoLine(

@@ -326,6 +326,10 @@ public class TrainDeparture {
     this.comment = comment;
   }
 
+  public void setCommentState(boolean state) {
+    commentState = state;
+  }
+
   /**
    * Builds a complex multi-line string containing information about the departure in an aesthetic
    * fashion.

@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
+  private LocalTime systemTime;
   private boolean mainRunningFlag = true;
 
   /**
@@ -22,6 +23,7 @@ public class UserInterface {
 
   public void init() {
     tdr = new TrainDepartureRegistry();
+    systemTime = LocalTime.of(0, 0);
   }
 
   /**
@@ -63,7 +65,7 @@ public class UserInterface {
     switch (chosen) {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
-      case 3 -> System.out.println("TBA. Sets system time");
+      case 3 -> setSystemTime();
       case 4 -> System.out.println("TBA. Toggles comments");
       case 5 -> System.out.println("TBA. Searches for departure");
       case 6 -> System.out.println("TBA. Modifies departure");
@@ -143,6 +145,35 @@ public class UserInterface {
       } else {
         System.out.println("Operation cancelled. No departure was added.");
         System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+      }
+    }
+  }
+
+  /**
+   * Takes user input to update system time.
+   * New time must be after current time.
+   */
+  private void setSystemTime() {
+    while (true) {
+      try {
+        System.out.println("Current time: " + systemTime);
+        String prompt = "Enter new system time on the format 'HH:MM': ";
+        String error = "System time must be on the format '12:34' (without quotation marks)";
+        LocalTime in = inputLocalTime(prompt, error);
+        if ((in.getHour() * 60 + in.getMinute())
+                < (systemTime.getHour() * 60 + systemTime.getMinute())) {
+          throw new IllegalArgumentException("New time must be after current time.");
+        }
+        System.out.println("Confirm new system time: " + in);
+        if (inputBinaryDecision()) {
+          systemTime = in;
+          System.out.println("Successfully changed system time to: " + systemTime);
+          return;
+        }
+        System.out.println("Operation cancelled. System time remains unchanged.");
+        return;
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
       }
     }
   }

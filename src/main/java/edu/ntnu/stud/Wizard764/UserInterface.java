@@ -75,7 +75,7 @@ public class UserInterface {
       case 3 -> setSystemTime();
       case 4 -> toggleComments();
       case 5 -> searchForDeparture();
-      case 6 -> System.out.println("TBA. Modifies departure");
+      case 6 -> modifyDeparture();
       case 7 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
@@ -259,6 +259,38 @@ public class UserInterface {
     System.out.println("Comment state toggled.");
     System.out.println("Current state: " + getCommentStateStr());
   }
+
+  /**
+   * Allows user to modify modifiable values of departure.
+   * Departure is chosen by user input.
+   * Calls itself recursively if user selects to modify several departures.
+   * Should not throw exceptions, as train number is ensured to be valid.
+   */
+  private void modifyDeparture() {
+    String trainNumber = "";
+    while (!tdr.departureExists(trainNumber)) {
+      String prompt = "Enter train number of the departure you wish to modify: ";
+      String error = "Train number cannot be blank";
+      trainNumber = inputEnforceNotEmpty(prompt, error);
+      if (!tdr.departureExists(trainNumber)) {
+        System.out.println("Departure does not exist. Would you like to try another train number?");
+        System.out.println("If no, you will be returned to the main menu.");
+        if (!inputBinaryDecision()) {
+          trainNumber = "";
+          break;
+        }
+      }
+    }
+    if (trainNumber.isEmpty()) {
+      return;
+    }
+    modifyDeparture(trainNumber);
+    System.out.println("Would you like to modify another departure?");
+    if (inputBinaryDecision()) {
+      modifyDeparture();
+    }
+  }
+
   /**
    * Allows user to modify modifiable values of specified departure.
    * Calls itself recursively if user selects to modify departure several times.

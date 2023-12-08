@@ -68,7 +68,7 @@ public class UserInterface {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
       case 3 -> setSystemTime();
-      case 4 -> System.out.println("TBA. Toggles comments");
+      case 4 -> toggleComments();
       case 5 -> System.out.println("TBA. Searches for departure");
       case 6 -> System.out.println("TBA. Modifies departure");
       case 7 -> mainRunningFlag = false;
@@ -197,6 +197,7 @@ public class UserInterface {
    */
   private void toggleComments() {
     commentState = !commentState;
+    tdr.setCommentState(commentState);
     System.out.println("Comment state toggled.");
     System.out.println("Current state: " + getCommentStateStr());
   }

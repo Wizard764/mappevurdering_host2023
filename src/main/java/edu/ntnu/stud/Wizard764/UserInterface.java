@@ -70,7 +70,7 @@ public class UserInterface {
       case 2 -> addDeparture();
       case 3 -> setSystemTime();
       case 4 -> toggleComments();
-      case 5 -> System.out.println("TBA. Searches for departure");
+      case 5 -> searchForDeparture();
       case 6 -> System.out.println("TBA. Modifies departure");
       case 7 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
@@ -190,6 +190,22 @@ public class UserInterface {
       } catch (IllegalArgumentException e) {
         System.out.println(e.getMessage());
       }
+    }
+  }
+
+  private void searchForDeparture() {
+    String[] opts = {"Search for departure(s) by:",
+                     "Train number",
+                     "Destination\nSelect: "};
+    int chosen = runOptionBasedMenu(opts);
+    switch (chosen) {
+      case 1 -> searchDepartureByTrainNumber();
+      case 2 -> searchDeparturesByDestination();
+      default -> throw new Error("Error. Default condition executed unexpectedly.");
+    }
+    System.out.println("Would you like to search for more departures?");
+    if (inputBinaryDecision()) {
+      searchForDeparture();
     }
   }
 

@@ -50,7 +50,7 @@ public class UserInterface {
       tdr.addDeparture(new TrainDeparture(departureTimes[i], lines[i],
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
-
+    System.out.println("\n\n\n#####   TRAIN DISPATCH SYSTEM   #####");
     while (mainRunningFlag) {
       runMainMenu();
     }
@@ -60,7 +60,7 @@ public class UserInterface {
    * Runs the main menu that the user lands on when the program is run.
    */
   private void runMainMenu() {
-    String[] testOpts = {"Select an option:",
+    String[] testOpts = {"Main menu:",
                          "Display departures",
                          "Add departure",
                          "Set system time (Current time: " + systemTime + ")",

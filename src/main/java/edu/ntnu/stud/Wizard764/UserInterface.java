@@ -259,6 +259,32 @@ public class UserInterface {
     System.out.println("Comment state toggled.");
     System.out.println("Current state: " + getCommentStateStr());
   }
+  /**
+   * Allows user to modify modifiable values of specified departure.
+   * Calls itself recursively if user selects to modify departure several times.
+   *
+   * @param trainNumber Train number of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception if departure doesn't exist.
+   */
+  private void modifyDeparture(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Selected departure:");
+    System.out.println(tdr.getDeparture(trainNumber));
+    String[] opts = {"Select value to modify: ",
+                     "Comment",
+                     "Delay",
+                     "Track\nSelect: "};
+    int choice = runOptionBasedMenu(opts);
+    switch (choice) {
+      case 1 -> modifyComment(trainNumber);
+      case 2 -> modifyDelay(trainNumber);
+      case 3 -> modifyTrack(trainNumber);
+      default -> throw new Error("Error. Default condition executed unexpectedly.");
+    }
+    System.out.println("Would you like to further modify this departure?");
+    if (inputBinaryDecision()) {
+      modifyDeparture(trainNumber);
+    }
+  }
 
   /**
    * Modifies the comment of a specific departure with user input.

@@ -48,6 +48,10 @@ public class TrainDeparture {
    * ages, thus increasing its lifespan.
    */
   private String comment;
+  /**
+   * Represents wether comment is to be included in toString return.
+   */
+  private boolean commentState;
 
   /**
    * Constructs a TrainDeparture with specified parameters including departure time, line, train
@@ -81,6 +85,7 @@ public class TrainDeparture {
     this.destination = destination;
     this.delay = LocalTime.of(delay.getHour(), delay.getMinute());
     this.comment = comment;
+    this.commentState = true;
   }
 
   /**

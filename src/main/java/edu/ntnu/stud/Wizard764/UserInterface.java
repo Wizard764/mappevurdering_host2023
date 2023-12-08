@@ -389,7 +389,8 @@ public class UserInterface {
       throw new IllegalArgumentException("At least one option is required");
     }
     String prompt = generateOptionBasedMenu(content);
-    String error = "Please enter a valid option between 1 and " + (content.length - 1);
+    String error = "Please enter a valid option between '1' and '"
+            + (content.length - 1 + "' (without quotation marks)");
     return inputInt(prompt, error, 1, content.length - 1);
   }
 

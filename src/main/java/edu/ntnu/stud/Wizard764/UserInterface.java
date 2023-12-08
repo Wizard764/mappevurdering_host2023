@@ -23,6 +23,10 @@ public class UserInterface {
 
   }
 
+  /**
+   * Initialization method.
+   * Initialized member variables. Runs once upon program execution.
+   */
   public void init() {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
@@ -82,6 +86,7 @@ public class UserInterface {
 
   /**
    * Generates user-presentable string for comment state.
+   *
    * @return "ENABLED" or "DISABLED".
    */
   private String getCommentStateStr() {
@@ -215,7 +220,8 @@ public class UserInterface {
    */
   private void searchDepartureByTrainNumber() {
     try {
-      String trainNum = inputEnforceNotEmpty("Please enter train number: ", "Train number may not be blank.");
+      String trainNum = inputEnforceNotEmpty("Please enter train number: ",
+                                             "Train number may not be blank.");
       System.out.println("Found departure:\n" + tdr.getDeparture(trainNum));
     } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());

@@ -116,6 +116,60 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Sets the comment of a departure in the registry.
+   *
+   * @param trainNumber Train number of the departure to be modified.
+   * @param comment New comment.
+   * @throws IllegalArgumentException Throws exception if departure doesn't exist.
+   */
+  public void setComment(String trainNumber, String comment) throws IllegalArgumentException {
+    for (TrainDeparture t : departures) {
+      if (t.getTrainNumber().equals(trainNumber)) {
+        t.setComment(comment);
+        return;
+      }
+    }
+    String ex = "\"No departure exists with train number: " + trainNumber + ".";
+    throw new IllegalArgumentException();
+  }
+
+  /**
+   * Sets the delay of a departure in the registry.
+   *
+   * @param trainNumber Train number of the departure to be modified.
+   * @param delay New delay.
+   * @throws IllegalArgumentException Throws exception if departure doesn't exist.
+   */
+  public void setDelay(String trainNumber, LocalTime delay) throws IllegalArgumentException {
+    for (TrainDeparture t : departures) {
+      if (t.getTrainNumber().equals(trainNumber)) {
+        t.setDelay(delay);
+        return;
+      }
+    }
+    String ex = "\"No departure exists with train number: " + trainNumber + ".";
+    throw new IllegalArgumentException();
+  }
+
+  /**
+   * Sets the track of a departure in the registry.
+   *
+   * @param trainNumber Train number of the departure to be modified.
+   * @param track New track.
+   * @throws IllegalArgumentException Throws exception if departure doesn't exist.
+   */
+  public void setTrack(String trainNumber, short track) throws IllegalArgumentException {
+    for (TrainDeparture t : departures) {
+      if (t.getTrainNumber().equals(trainNumber)) {
+        t.setTrack(track);
+        return;
+      }
+    }
+    String ex = "\"No departure exists with train number: " + trainNumber + ".";
+    throw new IllegalArgumentException();
+  }
+
+  /**
    * Private method to sort the list of departures by time using DepartureComparator.
    */
   public void sortDeparturesByTime() {

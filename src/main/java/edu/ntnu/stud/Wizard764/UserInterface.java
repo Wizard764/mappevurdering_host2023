@@ -185,7 +185,8 @@ public class UserInterface {
                 < (systemTime.getHour() * 60 + systemTime.getMinute())) {
           throw new IllegalArgumentException("New time must be after current time.");
         }
-        System.out.println("WARNING: Updating system time will automatically delete old departures!");
+        String warning = "WARNING: Updating system time will automatically delete old departures!";
+        System.out.println(warning);
         System.out.println("Confirm new system time: " + in);
         if (inputBinaryDecision()) {
           systemTime = in;

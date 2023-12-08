@@ -172,6 +172,7 @@ public class UserInterface {
 
   /**
    * Takes numeric input from user using Scanner.
+   * TODO: Fix bug that causes "ducplicate input" if input contains a space between other characters.
    *
    * @param prompt The prompt to present the user.
    * @param error The error to present user when input is wrong format.

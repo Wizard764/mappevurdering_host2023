@@ -2,6 +2,7 @@ package edu.ntnu.stud.Wizard764;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -203,6 +204,17 @@ public class UserInterface {
     } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
     }
+  }
+
+  /**
+   * Searches for all departures that match destination given by user.
+   */
+  private void searchDeparturesByDestination() {
+    String prompt = "Enter destination to search for: ";
+    String error = "Destination cannot be blank.";
+    TrainDeparture[] tds = tdr.getDeparturesByDestination(inputEnforceNotEmpty(prompt, error));
+    System.out.println("Found " + tds.length + " departure(s) with matching destination.");
+    Arrays.stream(tds).forEach(System.out::println);
   }
 
   /**

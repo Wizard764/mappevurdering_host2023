@@ -140,6 +140,14 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Sets comment state for each departure in registry.
+   * @param state New comment state.
+   */
+  public void setCommentState(boolean state) {
+      departures.forEach(t -> t.setCommentState(state));
+  }
+
+  /**
    * Overrides the default toString() method to provide a formatted string
    * representation of the complete list of departures sorted by time.
    *

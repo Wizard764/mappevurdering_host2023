@@ -2,6 +2,7 @@ package edu.ntnu.stud.Wizard764;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -11,17 +12,25 @@ import java.util.Scanner;
 public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
+  private LocalTime systemTime;
   private boolean mainRunningFlag = true;
+  private boolean commentState = true;
 
   /**
    * Constructor to initialize scanner.
    */
   public UserInterface() {
-    sc = new Scanner(System.in);
+
   }
 
+  /**
+   * Initialization method.
+   * Initialized member variables. Runs once upon program execution.
+   */
   public void init() {
+    sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
+    systemTime = LocalTime.of(0, 0);
   }
 
   /**
@@ -41,7 +50,7 @@ public class UserInterface {
       tdr.addDeparture(new TrainDeparture(departureTimes[i], lines[i],
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
-
+    System.out.println("\n\n\n#####   TRAIN DISPATCH SYSTEM   #####");
     while (mainRunningFlag) {
       runMainMenu();
     }
@@ -51,11 +60,11 @@ public class UserInterface {
    * Runs the main menu that the user lands on when the program is run.
    */
   private void runMainMenu() {
-    String[] testOpts = {"Select an option:",
+    String[] testOpts = {"Main menu:",
                          "Display departures",
                          "Add departure",
-                         "Set system time",
-                         "Toggle comments (CURRENT:TBA)",
+                         "Set system time (Current time: " + systemTime + ")",
+                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
                          "Exit application\nSelect: "};
@@ -63,15 +72,28 @@ public class UserInterface {
     switch (chosen) {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
-      case 3 -> System.out.println("TBA. Sets system time");
-      case 4 -> System.out.println("TBA. Toggles comments");
-      case 5 -> System.out.println("TBA. Searches for departure");
-      case 6 -> System.out.println("TBA. Modifies departure");
+      case 3 -> setSystemTime();
+      case 4 -> toggleComments();
+      case 5 -> searchForDeparture();
+      case 6 -> modifyDeparture();
       case 7 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
       pressEnterToContinue();
+    }
+  }
+
+  /**
+   * Generates user-presentable string for comment state.
+   *
+   * @return "ENABLED" or "DISABLED".
+   */
+  private String getCommentStateStr() {
+    if (commentState) {
+      return "ENABLED";
+    } else {
+      return "DISABLED";
     }
   }
 
@@ -148,6 +170,193 @@ public class UserInterface {
   }
 
   /**
+   * Takes user input to update system time.
+   * New time must be after current time.
+   * Also deletes (now) past departures.
+   */
+  private void setSystemTime() {
+    while (true) {
+      try {
+        System.out.println("Current time: " + systemTime);
+        String prompt = "Enter new system time on the format 'HH:MM': ";
+        String error = "System time must be on the format '12:34' (without quotation marks)";
+        LocalTime in = inputLocalTime(prompt, error);
+        if ((in.getHour() * 60 + in.getMinute())
+                < (systemTime.getHour() * 60 + systemTime.getMinute())) {
+          throw new IllegalArgumentException("New time must be after current time.");
+        }
+        String warning = "WARNING: Updating system time will automatically delete old departures!";
+        System.out.println(warning);
+        System.out.println("Confirm new system time: " + in);
+        if (inputBinaryDecision()) {
+          systemTime = in;
+          System.out.println("Successfully changed system time to: " + systemTime);
+          int noDepsDeleted = tdr.getNoDepartures();
+          tdr.deleteOldDepartures(systemTime);
+          noDepsDeleted -= tdr.getNoDepartures();
+          System.out.println(noDepsDeleted + " departure(s) were deleted.");
+          return;
+        }
+        System.out.println("Operation cancelled. System time remains unchanged.");
+        return;
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+  }
+
+  /**
+   * Allows user to search for one or more departure,
+   * either by train number or destination.
+   * Runs recursively until user is finished searching.
+   */
+  private void searchForDeparture() {
+    String[] opts = {"Search for departure(s) by:",
+                     "Train number",
+                     "Destination\nSelect: "};
+    int chosen = runOptionBasedMenu(opts);
+    switch (chosen) {
+      case 1 -> searchDepartureByTrainNumber();
+      case 2 -> searchDeparturesByDestination();
+      default -> throw new Error("Error. Default condition executed unexpectedly.");
+    }
+    System.out.println("Would you like to search for more departures?");
+    if (inputBinaryDecision()) {
+      searchForDeparture();
+    }
+  }
+
+  /**
+   * Searches for a departure by user input.
+   * Presents departure to user.
+   */
+  private void searchDepartureByTrainNumber() {
+    try {
+      String trainNum = inputEnforceNotEmpty("Please enter train number: ",
+                                             "Train number may not be blank.");
+      System.out.println("Found departure:\n" + tdr.getDeparture(trainNum));
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  /**
+   * Searches for all departures that match destination given by user.
+   */
+  private void searchDeparturesByDestination() {
+    String prompt = "Enter destination to search for: ";
+    String error = "Destination cannot be blank.";
+    TrainDeparture[] tds = tdr.getDeparturesByDestination(inputEnforceNotEmpty(prompt, error));
+    System.out.println("Found " + tds.length + " departure(s) with matching destination.");
+    Arrays.stream(tds).forEach(System.out::println);
+  }
+
+  /**
+   * Toggles commentState and prints receipt in console.
+   */
+  private void toggleComments() {
+    commentState = !commentState;
+    tdr.setCommentState(commentState);
+    System.out.println("Comment state toggled.");
+    System.out.println("Current state: " + getCommentStateStr());
+  }
+
+  /**
+   * Allows user to modify modifiable values of departure.
+   * Departure is chosen by user input.
+   * Calls itself recursively if user selects to modify several departures.
+   * Should not throw exceptions, as train number is ensured to be valid.
+   */
+  private void modifyDeparture() {
+    String trainNumber = "";
+    while (!tdr.departureExists(trainNumber)) {
+      String prompt = "Enter train number of the departure you wish to modify: ";
+      String error = "Train number cannot be blank";
+      trainNumber = inputEnforceNotEmpty(prompt, error);
+      if (!tdr.departureExists(trainNumber)) {
+        System.out.println("Departure does not exist. Would you like to try another train number?");
+        System.out.println("If no, you will be returned to the main menu.");
+        if (!inputBinaryDecision()) {
+          trainNumber = "";
+          break;
+        }
+      }
+    }
+    if (trainNumber.isEmpty()) {
+      return;
+    }
+    modifyDeparture(trainNumber);
+    System.out.println("Would you like to modify another departure?");
+    if (inputBinaryDecision()) {
+      modifyDeparture();
+    }
+  }
+
+  /**
+   * Allows user to modify modifiable values of specified departure.
+   * Calls itself recursively if user selects to modify departure several times.
+   *
+   * @param trainNumber Train number of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception if departure doesn't exist.
+   */
+  private void modifyDeparture(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Selected departure:");
+    System.out.println(tdr.getDeparture(trainNumber));
+    String[] opts = {"Select value to modify: ",
+                     "Comment",
+                     "Delay",
+                     "Track\nSelect: "};
+    int choice = runOptionBasedMenu(opts);
+    switch (choice) {
+      case 1 -> modifyComment(trainNumber);
+      case 2 -> modifyDelay(trainNumber);
+      case 3 -> modifyTrack(trainNumber);
+      default -> throw new Error("Error. Default condition executed unexpectedly.");
+    }
+    System.out.println("Would you like to further modify this departure?");
+    if (inputBinaryDecision()) {
+      modifyDeparture(trainNumber);
+    }
+  }
+
+  /**
+   * Modifies the comment of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyComment(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Enter new comment(can be empty):");
+    String comment = sc.nextLine();
+    tdr.setComment(trainNumber, comment);
+  }
+
+  /**
+   * Modifies the delay of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyDelay(String trainNumber) throws IllegalArgumentException {
+    String prompt = "Enter delay in the format 'HH:MM': ";
+    String error = "Delay must be in the following format: '12:34' (without quotation marks)";
+    LocalTime delay = inputDelay(tdr.getDeparture(trainNumber).getDepartureTime(), prompt, error);
+    tdr.setDelay(trainNumber, delay);
+  }
+
+  /**
+   * Modifies the track of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyTrack(String trainNumber) throws IllegalArgumentException {
+    String error = "Track must be a positive number below " + Short.MAX_VALUE;
+    short track = inputTrack("Enter track: ", error);
+    tdr.setTrack(trainNumber, track);
+  }
+
+  /**
    * Prints a visual representation of all departures stored in the registry to the console.
    * Departures are sorted by departure time, not including delay.
    */
@@ -172,6 +381,7 @@ public class UserInterface {
 
   /**
    * Takes numeric input from user using Scanner.
+   * TODO: Fix bug that causes "duplicate input" if input contains a space between other characters.
    *
    * @param prompt The prompt to present the user.
    * @param error The error to present user when input is wrong format.
@@ -356,7 +566,8 @@ public class UserInterface {
       throw new IllegalArgumentException("At least one option is required");
     }
     String prompt = generateOptionBasedMenu(content);
-    String error = "Please enter a valid option between 1 and " + (content.length - 1);
+    String error = "Please enter a valid option between '1' and '"
+            + (content.length - 1 + "' (without quotation marks)");
     return inputInt(prompt, error, 1, content.length - 1);
   }
 

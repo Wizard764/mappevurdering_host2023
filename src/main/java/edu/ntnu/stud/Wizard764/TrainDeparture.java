@@ -48,6 +48,10 @@ public class TrainDeparture {
    * ages, thus increasing its lifespan.
    */
   private String comment;
+  /**
+   * Represents wether comment is to be included in toString return.
+   */
+  private boolean commentState;
 
   /**
    * Constructs a TrainDeparture with specified parameters including departure time, line, train
@@ -81,6 +85,7 @@ public class TrainDeparture {
     this.destination = destination;
     this.delay = LocalTime.of(delay.getHour(), delay.getMinute());
     this.comment = comment;
+    this.commentState = true;
   }
 
   /**
@@ -321,6 +326,10 @@ public class TrainDeparture {
     this.comment = comment;
   }
 
+  public void setCommentState(boolean state) {
+    commentState = state;
+  }
+
   /**
    * Builds a complex multi-line string containing information about the departure in an aesthetic
    * fashion.
@@ -393,7 +402,7 @@ public class TrainDeparture {
                   desiredSegmentWidth))
           .append(" #\n"); // End with ##\n
     }
-    if (!comment.isEmpty()) { // Add comment if there is one
+    if (!comment.isEmpty() && commentState) { // Add comment if there is one
       out.append("# ")
           .append(
               createInfoLine(

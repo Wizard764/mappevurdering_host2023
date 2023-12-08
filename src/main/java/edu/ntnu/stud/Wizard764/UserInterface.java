@@ -172,6 +172,7 @@ public class UserInterface {
   /**
    * Takes user input to update system time.
    * New time must be after current time.
+   * Also deletes (now) past departures.
    */
   private void setSystemTime() {
     while (true) {
@@ -184,10 +185,15 @@ public class UserInterface {
                 < (systemTime.getHour() * 60 + systemTime.getMinute())) {
           throw new IllegalArgumentException("New time must be after current time.");
         }
+        System.out.println("WARNING: Updating system time will automatically delete old departures!");
         System.out.println("Confirm new system time: " + in);
         if (inputBinaryDecision()) {
           systemTime = in;
           System.out.println("Successfully changed system time to: " + systemTime);
+          int noDepsDeleted = tdr.getNoDepartures();
+          tdr.deleteOldDepartures(systemTime);
+          noDepsDeleted -= tdr.getNoDepartures();
+          System.out.println(noDepsDeleted + " departure(s) were deleted.");
           return;
         }
         System.out.println("Operation cancelled. System time remains unchanged.");

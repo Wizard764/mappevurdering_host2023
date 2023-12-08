@@ -55,17 +55,11 @@ public class UserInterface {
    * Runs the main menu that the user lands on when the program is run.
    */
   private void runMainMenu() {
-    String commentStateStr;
-    if (commentState) {
-      commentStateStr = "ENABLED";
-    } else {
-      commentStateStr = "DISABLED";
-    }
     String[] testOpts = {"Select an option:",
                          "Display departures",
                          "Add departure",
                          "Set system time (Current time: " + systemTime + ")",
-                         "Toggle comments (CURRENT: " + commentStateStr + ")",
+                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
                          "Exit application\nSelect: "};
@@ -82,6 +76,18 @@ public class UserInterface {
     }
     if (mainRunningFlag) {
       pressEnterToContinue();
+    }
+  }
+
+  /**
+   * Generates user-presentable string for comment state.
+   * @return "ENABLED" or "DISABLED".
+   */
+  private String getCommentStateStr() {
+    if (commentState) {
+      return "ENABLED";
+    } else {
+      return "DISABLED";
     }
   }
 

@@ -18,10 +18,11 @@ public class UserInterface {
    * Constructor to initialize scanner.
    */
   public UserInterface() {
-    sc = new Scanner(System.in);
+
   }
 
   public void init() {
+    sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
   }

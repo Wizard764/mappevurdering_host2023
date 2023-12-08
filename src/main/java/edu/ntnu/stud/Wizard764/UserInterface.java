@@ -261,6 +261,43 @@ public class UserInterface {
   }
 
   /**
+   * Modifies the comment of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyComment(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Enter new comment(can be empty):");
+    String comment = sc.nextLine();
+    tdr.setComment(trainNumber, comment);
+  }
+
+  /**
+   * Modifies the delay of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyDelay(String trainNumber) throws IllegalArgumentException {
+    String prompt = "Enter delay in the format 'HH:MM': ";
+    String error = "Delay must be in the following format: '12:34' (without quotation marks)";
+    LocalTime delay = inputDelay(tdr.getDeparture(trainNumber).getDepartureTime(), prompt, error);
+    tdr.setDelay(trainNumber, delay);
+  }
+
+  /**
+   * Modifies the track of a specific departure with user input.
+   *
+   * @param trainNumber trainNumber of the departure to be modified.
+   * @throws IllegalArgumentException Throws exception is departure doesn't exist.
+   */
+  private void modifyTrack(String trainNumber) throws IllegalArgumentException {
+    String error = "Track must be a positive number below " + Short.MAX_VALUE;
+    short track = inputTrack("Enter track: ", error);
+    tdr.setTrack(trainNumber, track);
+  }
+
+  /**
    * Prints a visual representation of all departures stored in the registry to the console.
    * Departures are sorted by departure time, not including delay.
    */

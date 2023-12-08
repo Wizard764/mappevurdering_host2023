@@ -193,6 +193,15 @@ public class UserInterface {
   }
 
   /**
+   * Toggles commentState and prints receipt in console.
+   */
+  private void toggleComments() {
+    commentState = !commentState;
+    System.out.println("Comment state toggled.");
+    System.out.println("Current state: " + getCommentStateStr());
+  }
+
+  /**
    * Prints a visual representation of all departures stored in the registry to the console.
    * Departures are sorted by departure time, not including delay.
    */

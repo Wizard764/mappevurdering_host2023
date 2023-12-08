@@ -204,6 +204,11 @@ public class UserInterface {
     }
   }
 
+  /**
+   * Allows user to search for one or more departure,
+   * either by train number or destination.
+   * Runs recursively until user is finished searching.
+   */
   private void searchForDeparture() {
     String[] opts = {"Search for departure(s) by:",
                      "Train number",

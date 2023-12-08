@@ -193,6 +193,19 @@ public class UserInterface {
   }
 
   /**
+   * Searches for a departure by user input.
+   * Presents departure to user.
+   */
+  private void searchDepartureByTrainNumber() {
+    try {
+      String trainNum = inputEnforceNotEmpty("Please enter train number: ", "Train number may not be blank.");
+      System.out.println("Found departure:\n" + tdr.getDeparture(trainNum));
+    } catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  /**
    * Toggles commentState and prints receipt in console.
    */
   private void toggleComments() {
@@ -227,7 +240,7 @@ public class UserInterface {
 
   /**
    * Takes numeric input from user using Scanner.
-   * TODO: Fix bug that causes "ducplicate input" if input contains a space between other characters.
+   * TODO: Fix bug that causes "duplicate input" if input contains a space between other characters.
    *
    * @param prompt The prompt to present the user.
    * @param error The error to present user when input is wrong format.

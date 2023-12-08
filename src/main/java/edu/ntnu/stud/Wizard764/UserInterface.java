@@ -57,7 +57,7 @@ public class UserInterface {
     String[] testOpts = {"Select an option:",
                          "Display departures",
                          "Add departure",
-                         "Set system time",
+                         "Set system time (Current time: " + systemTime + ")",
                          "Toggle comments (CURRENT:TBA)",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",

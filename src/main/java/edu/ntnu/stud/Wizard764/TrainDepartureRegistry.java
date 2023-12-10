@@ -106,11 +106,17 @@ public class TrainDepartureRegistry {
    * @param currentTime The current time.
    */
   public void deleteOldDepartures(LocalTime currentTime) {
+    if (departures.isEmpty()) {
+      return;
+    }
     sortDeparturesByTimeIncDelay();
     final int currentTimeMins = currentTime.getHour() * 60 + currentTime.getMinute();
     int currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
-    while (currentDepActDepartureTimeMins <= currentTimeMins) {
+    while (currentDepActDepartureTimeMins < currentTimeMins) {
       departures.remove(0);
+      if (departures.isEmpty()) {
+        return;
+      }
       currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
     }
   }

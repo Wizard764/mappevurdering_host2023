@@ -354,6 +354,58 @@ public class UserInterface {
 
 
   /**
+   * Modifies noTracks using user input and updates affected departures accordingly.
+   */
+  private void modifyNoTracks() {
+    System.out.println("Max number of tracks decide what the maximum"
+            + " allowed track number will be.");
+    System.out.println("Current limit: " + noTracks);
+    System.out.println("To disable limit (i.e. set it to " + Short.MAX_VALUE
+            + "), press ENTER with blank input.");
+    String newNoTracksStr;
+    short newNoTracks;
+    while (true) { //Loop persists until valid input is given.
+      try {
+        System.out.print("Enter new number of tracks: ");
+        newNoTracksStr = sc.nextLine();
+        if (newNoTracksStr.isEmpty()) { //If blank.
+          newNoTracks = Short.MAX_VALUE; //Set number of tracks to limit of short datatype.
+          break; //The loop exits here.
+        }
+        newNoTracks = Short.parseShort(newNoTracksStr); //Throws exception if unparsable.
+        if (newNoTracks < 1) {
+          throw new IllegalArgumentException("Track limit has to be at least 1.");
+        }
+        break; //If newNoTracks is valid, move out of the loop.
+      } catch (NumberFormatException e) {
+        System.out.println("Please enter a valid short on the format '123'"
+                + " (without quotation marks).");
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    boolean flag = false;
+    System.out.println("Please confirm new track limit: " + newNoTracks);
+    if (newNoTracks < tdr.getHighestTrackNo()) {
+      System.out.println("WARNING: Selected track number is lower than certain track"
+              + " numbers associated with existing departures.");
+      System.out.println("Applying this change will cause those"
+              + " departures to have their track unset.");
+      flag = true;
+    }
+    if (inputBinaryDecision()) {
+      noTracks = newNoTracks;
+      System.out.println("Number of tracks was successfully changed to: " + noTracks);
+      if (flag) {
+        System.out.println("Track number of " + tdr.unsetTrackBelowLimit(noTracks)
+                + " departure(s) were unset.");
+      }
+    } else {
+      System.out.println("Operation cancelled. Track number remains unchanged.");
+    }
+  }
+
+  /**
    * Modifies maxNoDepartures using user input.
    */
   private void modifyMaxNoDepartures() {

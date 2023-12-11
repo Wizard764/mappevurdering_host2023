@@ -331,9 +331,14 @@ public class UserInterface {
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
   private void modifyComment(String trainNumber) throws IllegalArgumentException {
+    String initialComment = tdr.getDeparture(trainNumber).getComment();
+    if (initialComment.isEmpty()) {
+      System.out.println("Current comment is empty.");
+    } else {
+      System.out.println("Current comment: " + initialComment);
+    }
     System.out.println("Enter new comment(can be empty):");
-    String comment = sc.nextLine();
-    tdr.setComment(trainNumber, comment);
+    tdr.setComment(trainNumber, sc.nextLine());
   }
 
   /**

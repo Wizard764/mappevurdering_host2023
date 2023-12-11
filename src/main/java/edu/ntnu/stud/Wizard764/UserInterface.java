@@ -116,53 +116,53 @@ public class UserInterface {
     String error = "You must enter departure time in the following format: "
                  + "'12:34' (without quotation marks))";
     final LocalTime departureTime = inputLocalTime(prompt, error);
-
+    //Take train line.
     prompt = "Enter the train line: ";
     error = "Departure must have a line.";
     final String line = inputEnforceNotEmpty(prompt, error);
-
+    //Take train number.
     prompt = "Enter the train number: ";
     error = "Departure must have a unique train number.";
     final String trainNumber = inputTrainNumberEnforceUniqueness(prompt, error);
-
+    //Take destination.
     prompt = "Enter the destination: ";
     error = "Departure must have a destination.";
     final String destination = inputEnforceNotEmpty(prompt, error);
-
+    //Take delay.
     prompt = "Enter delay(can be empty): ";
     error = "You must enter a delay in the following format: "
             + "'12:34' (without quotation marks))";
-    final LocalTime delay = inputDelay(departureTime, prompt, error);
-
+    final LocalTime delay = inputDelay(departureTime, prompt, error, true);
+    //Take track.
     prompt = "Enter track(can be empty): ";
-    error = "You must enter a positive track number below " + Short.MAX_VALUE + ".";
+    error = "You must enter a positive track number no higher than " + noTracks + ".";
     final short track = inputTrack(prompt, error);
-
+    //Take comment.
     System.out.println("Enter comment(if applicable/can be empty): ");
     String comment = sc.nextLine();
-
+    //Construct departure.
     TrainDeparture newDeparture = new TrainDeparture(departureTime, line, trainNumber,
                                                      destination, delay, track, comment);
-
+    //Confirm information is correct with user.
     System.out.println("Confirm the information below is correct: ");
     System.out.println(newDeparture);
-    if (inputBinaryDecision()) {
-      tdr.addDeparture(newDeparture);
-      noDepsAdded++; //Track number of departures added.
+    if (inputBinaryDecision()) { //If information is correct
+      tdr.addDeparture(newDeparture); //Add departure to registry
+      noDepsAdded++; //Increment number of departures added.
       System.out.println("SUCCESS: new departure added.");
       System.out.println("Would you like to add another departure?"
               + " If no, you will be returned to the main menu.");
-      if (inputBinaryDecision()) {
+      if (inputBinaryDecision()) { //If user wants to add another departure.
         addDeparture(noDepsAdded); //Recursive method call.
-      } else {
+      } else { //Is user is finished adding departures.
         System.out.println("Successfully added " + noDepsAdded + " departure(s).");
       }
-    } else {
+    } else { //If information entered is incorrect according to user.
       System.out.println("Would you like to re-enter the information for the departure?"
                        + " If no, you will be returned to the main menu.");
-      if (inputBinaryDecision()) {
-        addDeparture();
-      } else {
+      if (inputBinaryDecision()) { //If user wants to re-enter information.
+        addDeparture(noDepsAdded); //Recursive method call.
+      } else { //If user does not want to re-enter information.
         System.out.println("Operation cancelled. No departure was added.");
         System.out.println("Successfully added " + noDepsAdded + " departure(s).");
       }

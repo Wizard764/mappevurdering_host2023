@@ -118,6 +118,13 @@ public class UserInterface {
    * @param noDepsAdded Number of departures already added. Used for recursion.
    */
   private void addDeparture(int noDepsAdded) {
+    if (tdr.getNoDepartures() >= maxNoDepartures) { //If max no departures reached.
+      System.out.println("Maximum number of departures reached.");
+      System.out.println("To add more, either delete some or increase the limit.");
+      System.out.println("(This option is found under 'Settings -> Max no. departures')");
+      return;
+    }
+    //Take departure time.
     String prompt = "Enter departure time(Format: 'HH:MM'): ";
     String error = "You must enter departure time in the following format: "
                  + "'12:34' (without quotation marks))";

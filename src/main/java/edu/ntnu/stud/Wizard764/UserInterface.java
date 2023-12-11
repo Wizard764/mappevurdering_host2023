@@ -13,6 +13,8 @@ public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
   private LocalTime systemTime;
+  private short noTracks;
+  private int maxNoDepartures;
   private boolean mainRunningFlag;
   private boolean commentState;
 
@@ -31,6 +33,8 @@ public class UserInterface {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
+    noTracks = 100;
+    maxNoDepartures = 2000;
     mainRunningFlag = true;
     commentState = true;
   }

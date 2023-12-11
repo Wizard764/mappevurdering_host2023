@@ -82,7 +82,7 @@ public class UserInterface {
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
-      pressEnterToContinue();
+      pressEnterToContinue("Press ENTER to return to main menu");
     }
   }
 
@@ -404,8 +404,8 @@ public class UserInterface {
    * Pauses the program until the user presses ENTER.
    * TODO: Figure out if this method can be refactored to a prettier form.
    */
-  private void pressEnterToContinue() {
-    System.out.println("Press ENTER to return to main menu");
+  private void pressEnterToContinue(String prompt) {
+    System.out.println(prompt);
     try {
       while (System.in.available() == 0){} //Runs (waits) until there is input from user.
       while (System.in.available() > 0) { //Consumes all input

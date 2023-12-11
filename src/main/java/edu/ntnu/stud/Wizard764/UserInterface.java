@@ -353,6 +353,12 @@ public class UserInterface {
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
   private void modifyTrack(String trainNumber) throws IllegalArgumentException {
+    short currentTrack = tdr.getDeparture(trainNumber).getTrack();
+    if (currentTrack == -1) {
+      System.out.println("Current track is not set.");
+    } else {
+      System.out.println("Current track: " + currentTrack);
+    }
     String error = "Track must be a positive number below " + Short.MAX_VALUE;
     short track = inputTrack("Enter track: ", error);
     tdr.setTrack(trainNumber, track);

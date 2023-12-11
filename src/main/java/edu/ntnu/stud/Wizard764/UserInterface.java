@@ -563,6 +563,8 @@ public class UserInterface {
 
   /**
    * Takes delay from the user in the correct format.
+   * Ensures delay is not too short or long so that departure
+   * fits between current system time and end of day.
    *
    * @param departureTime Departure time of the departure that delay is assigned to.
    *                      This is used to avoid departure times spilling into next day.
@@ -571,23 +573,30 @@ public class UserInterface {
    *                      and returns LocalTime.of(0, 0) if input is empty.
    * @param prompt Presented to the user before input is taken.
    * @param error Presented to the user if input is invalid.
+   * @param enforceValid If true, only delays that land departure time after system time is allowed.
    * @return Returns LocalTime object that together with departureTime
    *         provided does not exceed 23:59.
    */
-  private LocalTime inputDelay(LocalTime departureTime, String prompt, String error) {
+  private LocalTime inputDelay(LocalTime departureTime, String prompt,
+                               String error, boolean enforceValid) {
     LocalTime delay;
     int depTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
     while (true) {
       try {
         System.out.print(prompt);
         String in = sc.nextLine();
         if (in.isEmpty()) {
-          return LocalTime.of(0, 0);
+          delay = LocalTime.of(0, 0);
+        } else {
+          delay = LocalTime.parse(in);
         }
-        delay = LocalTime.parse(in);
         int actDepTimeMins = depTimeMins + delay.getHour() * 60 + delay.getMinute();
-        if (actDepTimeMins >= 60 * 24) {
+        if (actDepTimeMins >= 60 * 24) { //If departure time is after 23:59.
           throw new IllegalArgumentException("Delay is too long. Departure is past day.");
+        } else if (actDepTimeMins < systemTimeMins && enforceValid) {
+          throw new IllegalArgumentException("Departure time plus delay lands "
+            + "before current system time. Please enter a larger delay.");
         }
         return delay;
       } catch (IllegalArgumentException e) {

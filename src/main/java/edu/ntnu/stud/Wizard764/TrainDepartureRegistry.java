@@ -101,7 +101,7 @@ public class TrainDepartureRegistry {
    * Finds the highest track number used.
    * @return Returns 0 if no departures exist, -1 if no tracks are set.
    */
-  short getHighestTrackNo() {
+  public short getHighestTrackNo() {
     short highestTrackNo = 0;
     for (TrainDeparture t : departures) {
       highestTrackNo = (short) Integer.max(highestTrackNo, t.getTrack());

@@ -73,6 +73,7 @@ public class UserInterface {
                          "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
+                         "Settings (max values and limits)",
                          "Exit application\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
@@ -82,7 +83,8 @@ public class UserInterface {
       case 4 -> toggleComments();
       case 5 -> searchForDeparture();
       case 6 -> modifyDeparture();
-      case 7 -> mainRunningFlag = false;
+      case 7 -> runSettingsMenu();
+      case 8 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {

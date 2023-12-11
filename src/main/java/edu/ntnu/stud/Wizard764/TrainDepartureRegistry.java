@@ -98,6 +98,18 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Finds the highest track number used.
+   * @return Returns 0 if no departures exist, -1 if no tracks are set.
+   */
+  short getHighestTrackNo() {
+    short highestTrackNo = 0;
+    for (TrainDeparture t : departures) {
+      highestTrackNo = (short) Integer.max(highestTrackNo, t.getTrack());
+    }
+    return highestTrackNo;
+  }
+
+  /**
    * Deletes departures that are past as of the time given as parameter.
    * METACOMMENT-NOTE: In actual use it would make sense for this method to fetch the current time,
    *     but the task description asks for time to be adjusted manually.

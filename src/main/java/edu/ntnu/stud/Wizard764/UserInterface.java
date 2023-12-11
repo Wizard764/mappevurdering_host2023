@@ -70,21 +70,19 @@ public class UserInterface {
                          "Display departures",
                          "Add departure",
                          "Set system time (Current time: " + systemTime + ")",
-                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
-                         "Settings (max values and limits)",
+                         "Settings (max values, limits and comments)",
                          "Exit application\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
       case 3 -> setSystemTime();
-      case 4 -> toggleComments();
-      case 5 -> searchForDeparture();
-      case 6 -> modifyDeparture();
-      case 7 -> runSettingsMenu();
-      case 8 -> mainRunningFlag = false;
+      case 4 -> searchForDeparture();
+      case 5 -> modifyDeparture();
+      case 6 -> runSettingsMenu();
+      case 7 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
@@ -362,13 +360,15 @@ public class UserInterface {
       String[] prompt = {"Settings (select to modify):",
                          "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
                          "Max number of departures (Current: " + maxNoDepartures + ")",
+                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Return to main menu\n"
                        + "Select: "};
       int chosen = runOptionBasedMenu(prompt);
       switch (chosen) {
         case 1 -> modifyNoTracks();
         case 2 -> modifyMaxNoDepartures();
-        case 3 -> {
+        case 3 -> toggleComments();
+        case 4 -> {
           return;
         }
         default -> throw new Error("Error. Default condition executed unexpectedly.");

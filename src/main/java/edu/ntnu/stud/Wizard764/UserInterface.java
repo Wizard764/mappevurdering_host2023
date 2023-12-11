@@ -352,6 +352,28 @@ public class UserInterface {
     tdr.setComment(trainNumber, sc.nextLine());
   }
 
+  /**
+   * Runs menu allowing the user to change certain program settings.
+   */
+  private void runSettingsMenu() {
+    while (true) {
+      String[] prompt = {"Settings (select to modify):",
+                         "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
+                         "Max number of departures (Current: " + maxNoDepartures + ")",
+                         "Return to main menu\n"
+                       + "Select: "};
+      int chosen = runOptionBasedMenu(prompt);
+      switch (chosen) {
+        case 1 -> modifyNoTracks();
+        case 2 -> modifyMaxNoDepartures();
+        case 3 -> {
+          return;
+        }
+        default -> throw new Error("Error. Default condition executed unexpectedly.");
+      }
+      pressEnterToContinue("Press ENTER to return to settings");
+    }
+  }
 
   /**
    * Modifies noTracks using user input and updates affected departures accordingly.

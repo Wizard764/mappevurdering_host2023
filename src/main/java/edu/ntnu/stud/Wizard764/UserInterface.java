@@ -309,15 +309,18 @@ public class UserInterface {
                      "Delay",
                      "Track\nSelect: "};
     int choice = runOptionBasedMenu(opts);
+    boolean chain = true; //Used to determine whether to chain modifications of the same departure.
     switch (choice) {
       case 1 -> modifyComment(trainNumber);
-      case 2 -> modifyDelay(trainNumber);
+      case 2 -> chain = modifyDelay(trainNumber);
       case 3 -> modifyTrack(trainNumber);
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
-    System.out.println("Would you like to further modify this departure?");
-    if (inputBinaryDecision()) {
-      modifyDeparture(trainNumber);
+    if (chain) {
+      System.out.println("Would you like to further modify this departure?");
+      if (inputBinaryDecision()) {
+        modifyDeparture(trainNumber);
+      }
     }
   }
 
@@ -339,11 +342,30 @@ public class UserInterface {
    * @param trainNumber trainNumber of the departure to be modified.
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
-  private void modifyDelay(String trainNumber) throws IllegalArgumentException {
+  private boolean modifyDelay(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Current delay: " + tdr.getDeparture(trainNumber).getDelay());
     String prompt = "Enter delay in the format 'HH:MM': ";
     String error = "Delay must be in the following format: '12:34' (without quotation marks)";
-    LocalTime delay = inputDelay(tdr.getDeparture(trainNumber).getDepartureTime(), prompt, error);
+    LocalTime departureTime = tdr.getDeparture(trainNumber).getDepartureTime();
+    LocalTime delay = inputDelay(departureTime, prompt, error, false);
+    int departureTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    int delayMins = delay.getHour() * 60 + delay.getMinute();
+    int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
+    boolean chain = true;
+    if (departureTimeMins + delayMins < systemTimeMins) {
+      System.out.println("New delay will cause departure to be automatically deleted.");
+      System.out.println("Are you sure you want to proceed?");
+      if (inputBinaryDecision()) {
+        System.out.println("Departure deleted.");
+        chain = false;
+      } else {
+        System.out.println("Delay remains unchanged.");
+        return chain;
+      }
+    }
     tdr.setDelay(trainNumber, delay);
+    tdr.deleteOldDepartures(systemTime);
+    return chain;
   }
 
   /**

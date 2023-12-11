@@ -13,8 +13,8 @@ public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
   private LocalTime systemTime;
-  private boolean mainRunningFlag = true;
-  private boolean commentState = true;
+  private boolean mainRunningFlag;
+  private boolean commentState;
 
   /**
    * Constructor to initialize scanner.
@@ -31,6 +31,8 @@ public class UserInterface {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
+    mainRunningFlag = true;
+    commentState = true;
   }
 
   /**

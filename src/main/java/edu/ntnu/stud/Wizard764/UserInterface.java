@@ -69,7 +69,6 @@ public class UserInterface {
     String[] testOpts = {"Main menu:",
                          "Display departures",
                          "Add departure",
-                         "Set system time (Current time: " + systemTime + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
                          "Settings (max values, limits and comments)",
@@ -78,11 +77,10 @@ public class UserInterface {
     switch (chosen) {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
-      case 3 -> setSystemTime();
-      case 4 -> searchForDeparture();
-      case 5 -> modifyDeparture();
-      case 6 -> runSettingsMenu();
-      case 7 -> mainRunningFlag = false;
+      case 3 -> searchForDeparture();
+      case 4 -> modifyDeparture();
+      case 5 -> runSettingsMenu();
+      case 6 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
@@ -361,6 +359,7 @@ public class UserInterface {
                          "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
                          "Max number of departures (Current: " + maxNoDepartures + ")",
                          "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
+                         "Set system time (Current time: " + systemTime + ")",
                          "Return to main menu\n"
                        + "Select: "};
       int chosen = runOptionBasedMenu(prompt);
@@ -368,7 +367,8 @@ public class UserInterface {
         case 1 -> modifyNoTracks();
         case 2 -> modifyMaxNoDepartures();
         case 3 -> toggleComments();
-        case 4 -> {
+        case 4 -> setSystemTime();
+        case 5 -> {
           return;
         }
         default -> throw new Error("Error. Default condition executed unexpectedly.");

@@ -352,6 +352,53 @@ public class UserInterface {
     tdr.setComment(trainNumber, sc.nextLine());
   }
 
+
+  /**
+   * Modifies maxNoDepartures using user input.
+   */
+  private void modifyMaxNoDepartures() {
+    System.out.println("Max number of departures decide how many departures"
+            + " can be stored in the registry.");
+    System.out.println("Current limit: " + maxNoDepartures);
+    System.out.println("To disable limit (i.e. set it to " + Integer.MAX_VALUE
+            + "), press ENTER with blank input.");
+    String newMaxNoDepsStr;
+    int newMaxNoDeps;
+    while (true) { //Loop persists until valid input is given.
+      try {
+        System.out.print("Enter new max number of departures: ");
+        newMaxNoDepsStr = sc.nextLine();
+        if (newMaxNoDepsStr.isEmpty()) { //If blank.
+          newMaxNoDeps = Integer.MAX_VALUE; //Set number of tracks to limit of short datatype.
+          break; //The loop exits here.
+        }
+        newMaxNoDeps = Short.parseShort(newMaxNoDepsStr); //Throws exception if unparsable.
+        if (newMaxNoDeps < 1) {
+          throw new IllegalArgumentException("Departure limit has to be at least 1.");
+        }
+        break; //If newNoTracks is valid, move out of the loop.
+      } catch (NumberFormatException e) {
+        System.out.println("Please enter a valid integer on the format '123'"
+                + " (without quotation marks).");
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    if (newMaxNoDeps < tdr.getNoDepartures()) {
+      System.out.println("New max number of departures is lower than"
+              + " current number of departures stored in registry.");
+      System.out.println("If you want to set this limit, you must first delete some departures.");
+      return;
+    }
+    System.out.println("Please confirm new departure limit: " + newMaxNoDeps);
+    if (inputBinaryDecision()) {
+      maxNoDepartures = newMaxNoDeps;
+      System.out.println("Departure limit was successfully changed to: " + maxNoDepartures);
+    } else {
+      System.out.println("Operation cancelled. Departure limit remains unchanged.");
+    }
+  }
+
   /**
    * Modifies the delay of a specific departure with user input.
    *

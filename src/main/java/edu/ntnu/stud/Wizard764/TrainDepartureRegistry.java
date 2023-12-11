@@ -110,6 +110,23 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Unsets all tracks higher than provided limit.
+   *
+   * @param limit Highest track number allowed.
+   * @return Returns number of tracks unset.
+   */
+  public int unsetTrackBelowLimit(short limit) {
+    int departuresUnset = 0;
+    for (TrainDeparture t : departures) {
+      if (t.getTrack() > limit) {
+        t.unsetTrack();
+        departuresUnset++;
+      }
+    }
+    return departuresUnset;
+  }
+
+  /**
    * Deletes departures that are past as of the time given as parameter.
    * METACOMMENT-NOTE: In actual use it would make sense for this method to fetch the current time,
    *     but the task description asks for time to be adjusted manually.

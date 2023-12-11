@@ -486,11 +486,11 @@ public class UserInterface {
       try {
         System.out.print(prompt);
         String in = sc.nextLine(); //Take user input.
-        if (in.isEmpty()) {
+        if (in.isEmpty()) { //Track not yet set.
           return -1;
         }
         short temp = Short.parseShort(in); //Attempt to parse as short.
-        if (temp == -1 || temp >= 1) { //If valid
+        if (temp == -1 || (temp >= 1 && temp <= noTracks)) { //If valid
           return temp;
         }
         throw new IllegalArgumentException();

@@ -13,8 +13,10 @@ public class UserInterface {
   private TrainDepartureRegistry tdr;
   private java.util.Scanner sc;
   private LocalTime systemTime;
-  private boolean mainRunningFlag = true;
-  private boolean commentState = true;
+  private short noTracks;
+  private int maxNoDepartures;
+  private boolean mainRunningFlag;
+  private boolean commentState;
 
   /**
    * Constructor to initialize scanner.
@@ -31,6 +33,10 @@ public class UserInterface {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
+    noTracks = 100;
+    maxNoDepartures = 2000;
+    mainRunningFlag = true;
+    commentState = true;
   }
 
   /**
@@ -67,6 +73,7 @@ public class UserInterface {
                          "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
+                         "Settings (max values and limits)",
                          "Exit application\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
@@ -76,11 +83,12 @@ public class UserInterface {
       case 4 -> toggleComments();
       case 5 -> searchForDeparture();
       case 6 -> modifyDeparture();
-      case 7 -> mainRunningFlag = false;
+      case 7 -> runSettingsMenu();
+      case 8 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
-      pressEnterToContinue();
+      pressEnterToContinue("Press ENTER to return to main menu");
     }
   }
 
@@ -112,57 +120,64 @@ public class UserInterface {
    * @param noDepsAdded Number of departures already added. Used for recursion.
    */
   private void addDeparture(int noDepsAdded) {
+    if (tdr.getNoDepartures() >= maxNoDepartures) { //If max no departures reached.
+      System.out.println("Maximum number of departures reached.");
+      System.out.println("To add more, either delete some or increase the limit.");
+      System.out.println("(This option is found under 'Settings -> Max no. departures')");
+      return;
+    }
+    //Take departure time.
     String prompt = "Enter departure time(Format: 'HH:MM'): ";
     String error = "You must enter departure time in the following format: "
                  + "'12:34' (without quotation marks))";
     final LocalTime departureTime = inputLocalTime(prompt, error);
-
+    //Take train line.
     prompt = "Enter the train line: ";
     error = "Departure must have a line.";
     final String line = inputEnforceNotEmpty(prompt, error);
-
+    //Take train number.
     prompt = "Enter the train number: ";
     error = "Departure must have a unique train number.";
     final String trainNumber = inputTrainNumberEnforceUniqueness(prompt, error);
-
+    //Take destination.
     prompt = "Enter the destination: ";
     error = "Departure must have a destination.";
     final String destination = inputEnforceNotEmpty(prompt, error);
-
+    //Take delay.
     prompt = "Enter delay(can be empty): ";
     error = "You must enter a delay in the following format: "
             + "'12:34' (without quotation marks))";
-    final LocalTime delay = inputDelay(departureTime, prompt, error);
-
+    final LocalTime delay = inputDelay(departureTime, prompt, error, true);
+    //Take track.
     prompt = "Enter track(can be empty): ";
-    error = "You must enter a positive track number below " + Short.MAX_VALUE + ".";
+    error = "You must enter a positive track number no higher than " + noTracks + ".";
     final short track = inputTrack(prompt, error);
-
+    //Take comment.
     System.out.println("Enter comment(if applicable/can be empty): ");
     String comment = sc.nextLine();
-
+    //Construct departure.
     TrainDeparture newDeparture = new TrainDeparture(departureTime, line, trainNumber,
                                                      destination, delay, track, comment);
-
+    //Confirm information is correct with user.
     System.out.println("Confirm the information below is correct: ");
     System.out.println(newDeparture);
-    if (inputBinaryDecision()) {
-      tdr.addDeparture(newDeparture);
-      noDepsAdded++; //Track number of departures added.
+    if (inputBinaryDecision()) { //If information is correct
+      tdr.addDeparture(newDeparture); //Add departure to registry
+      noDepsAdded++; //Increment number of departures added.
       System.out.println("SUCCESS: new departure added.");
       System.out.println("Would you like to add another departure?"
               + " If no, you will be returned to the main menu.");
-      if (inputBinaryDecision()) {
+      if (inputBinaryDecision()) { //If user wants to add another departure.
         addDeparture(noDepsAdded); //Recursive method call.
-      } else {
+      } else { //Is user is finished adding departures.
         System.out.println("Successfully added " + noDepsAdded + " departure(s).");
       }
-    } else {
+    } else { //If information entered is incorrect according to user.
       System.out.println("Would you like to re-enter the information for the departure?"
                        + " If no, you will be returned to the main menu.");
-      if (inputBinaryDecision()) {
-        addDeparture();
-      } else {
+      if (inputBinaryDecision()) { //If user wants to re-enter information.
+        addDeparture(noDepsAdded); //Recursive method call.
+      } else { //If user does not want to re-enter information.
         System.out.println("Operation cancelled. No departure was added.");
         System.out.println("Successfully added " + noDepsAdded + " departure(s).");
       }
@@ -307,15 +322,18 @@ public class UserInterface {
                      "Delay",
                      "Track\nSelect: "};
     int choice = runOptionBasedMenu(opts);
+    boolean chain = true; //Used to determine whether to chain modifications of the same departure.
     switch (choice) {
       case 1 -> modifyComment(trainNumber);
-      case 2 -> modifyDelay(trainNumber);
+      case 2 -> chain = modifyDelay(trainNumber);
       case 3 -> modifyTrack(trainNumber);
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
-    System.out.println("Would you like to further modify this departure?");
-    if (inputBinaryDecision()) {
-      modifyDeparture(trainNumber);
+    if (chain) {
+      System.out.println("Would you like to further modify this departure?");
+      if (inputBinaryDecision()) {
+        modifyDeparture(trainNumber);
+      }
     }
   }
 
@@ -326,9 +344,135 @@ public class UserInterface {
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
   private void modifyComment(String trainNumber) throws IllegalArgumentException {
+    String initialComment = tdr.getDeparture(trainNumber).getComment();
+    if (initialComment.isEmpty()) {
+      System.out.println("Current comment is empty.");
+    } else {
+      System.out.println("Current comment: " + initialComment);
+    }
     System.out.println("Enter new comment(can be empty):");
-    String comment = sc.nextLine();
-    tdr.setComment(trainNumber, comment);
+    tdr.setComment(trainNumber, sc.nextLine());
+  }
+
+  /**
+   * Runs menu allowing the user to change certain program settings.
+   */
+  private void runSettingsMenu() {
+    while (true) {
+      String[] prompt = {"Settings (select to modify):",
+                         "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
+                         "Max number of departures (Current: " + maxNoDepartures + ")",
+                         "Return to main menu\n"
+                       + "Select: "};
+      int chosen = runOptionBasedMenu(prompt);
+      switch (chosen) {
+        case 1 -> modifyNoTracks();
+        case 2 -> modifyMaxNoDepartures();
+        case 3 -> {
+          return;
+        }
+        default -> throw new Error("Error. Default condition executed unexpectedly.");
+      }
+      pressEnterToContinue("Press ENTER to return to settings");
+    }
+  }
+
+  /**
+   * Modifies noTracks using user input and updates affected departures accordingly.
+   */
+  private void modifyNoTracks() {
+    System.out.println("Max number of tracks decide what the maximum"
+            + " allowed track number will be.");
+    System.out.println("Current limit: " + noTracks);
+    System.out.println("To disable limit (i.e. set it to " + Short.MAX_VALUE
+            + "), press ENTER with blank input.");
+    String newNoTracksStr;
+    short newNoTracks;
+    while (true) { //Loop persists until valid input is given.
+      try {
+        System.out.print("Enter new number of tracks: ");
+        newNoTracksStr = sc.nextLine();
+        if (newNoTracksStr.isEmpty()) { //If blank.
+          newNoTracks = Short.MAX_VALUE; //Set number of tracks to limit of short datatype.
+          break; //The loop exits here.
+        }
+        newNoTracks = Short.parseShort(newNoTracksStr); //Throws exception if unparsable.
+        if (newNoTracks < 1) {
+          throw new IllegalArgumentException("Track limit has to be at least 1.");
+        }
+        break; //If newNoTracks is valid, move out of the loop.
+      } catch (NumberFormatException e) {
+        System.out.println("Please enter a valid short on the format '123'"
+                + " (without quotation marks).");
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    boolean flag = false;
+    System.out.println("Please confirm new track limit: " + newNoTracks);
+    if (newNoTracks < tdr.getHighestTrackNo()) {
+      System.out.println("WARNING: Selected track number is lower than certain track"
+              + " numbers associated with existing departures.");
+      System.out.println("Applying this change will cause those"
+              + " departures to have their track unset.");
+      flag = true;
+    }
+    if (inputBinaryDecision()) {
+      noTracks = newNoTracks;
+      System.out.println("Number of tracks was successfully changed to: " + noTracks);
+      if (flag) {
+        System.out.println("Track number of " + tdr.unsetTrackBelowLimit(noTracks)
+                + " departure(s) were unset.");
+      }
+    } else {
+      System.out.println("Operation cancelled. Track number remains unchanged.");
+    }
+  }
+
+  /**
+   * Modifies maxNoDepartures using user input.
+   */
+  private void modifyMaxNoDepartures() {
+    System.out.println("Max number of departures decide how many departures"
+            + " can be stored in the registry.");
+    System.out.println("Current limit: " + maxNoDepartures);
+    System.out.println("To disable limit (i.e. set it to " + Integer.MAX_VALUE
+            + "), press ENTER with blank input.");
+    String newMaxNoDepsStr;
+    int newMaxNoDeps;
+    while (true) { //Loop persists until valid input is given.
+      try {
+        System.out.print("Enter new max number of departures: ");
+        newMaxNoDepsStr = sc.nextLine();
+        if (newMaxNoDepsStr.isEmpty()) { //If blank.
+          newMaxNoDeps = Integer.MAX_VALUE; //Set number of tracks to limit of short datatype.
+          break; //The loop exits here.
+        }
+        newMaxNoDeps = Short.parseShort(newMaxNoDepsStr); //Throws exception if unparsable.
+        if (newMaxNoDeps < 1) {
+          throw new IllegalArgumentException("Departure limit has to be at least 1.");
+        }
+        break; //If newNoTracks is valid, move out of the loop.
+      } catch (NumberFormatException e) {
+        System.out.println("Please enter a valid integer on the format '123'"
+                + " (without quotation marks).");
+      } catch (IllegalArgumentException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+    if (newMaxNoDeps < tdr.getNoDepartures()) {
+      System.out.println("New max number of departures is lower than"
+              + " current number of departures stored in registry.");
+      System.out.println("If you want to set this limit, you must first delete some departures.");
+      return;
+    }
+    System.out.println("Please confirm new departure limit: " + newMaxNoDeps);
+    if (inputBinaryDecision()) {
+      maxNoDepartures = newMaxNoDeps;
+      System.out.println("Departure limit was successfully changed to: " + maxNoDepartures);
+    } else {
+      System.out.println("Operation cancelled. Departure limit remains unchanged.");
+    }
   }
 
   /**
@@ -337,11 +481,30 @@ public class UserInterface {
    * @param trainNumber trainNumber of the departure to be modified.
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
-  private void modifyDelay(String trainNumber) throws IllegalArgumentException {
+  private boolean modifyDelay(String trainNumber) throws IllegalArgumentException {
+    System.out.println("Current delay: " + tdr.getDeparture(trainNumber).getDelay());
     String prompt = "Enter delay in the format 'HH:MM': ";
     String error = "Delay must be in the following format: '12:34' (without quotation marks)";
-    LocalTime delay = inputDelay(tdr.getDeparture(trainNumber).getDepartureTime(), prompt, error);
+    LocalTime departureTime = tdr.getDeparture(trainNumber).getDepartureTime();
+    LocalTime delay = inputDelay(departureTime, prompt, error, false);
+    int departureTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    int delayMins = delay.getHour() * 60 + delay.getMinute();
+    int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
+    boolean chain = true;
+    if (departureTimeMins + delayMins < systemTimeMins) {
+      System.out.println("New delay will cause departure to be automatically deleted.");
+      System.out.println("Are you sure you want to proceed?");
+      if (inputBinaryDecision()) {
+        System.out.println("Departure deleted.");
+        chain = false;
+      } else {
+        System.out.println("Delay remains unchanged.");
+        return chain;
+      }
+    }
     tdr.setDelay(trainNumber, delay);
+    tdr.deleteOldDepartures(systemTime);
+    return chain;
   }
 
   /**
@@ -351,6 +514,12 @@ public class UserInterface {
    * @throws IllegalArgumentException Throws exception is departure doesn't exist.
    */
   private void modifyTrack(String trainNumber) throws IllegalArgumentException {
+    short currentTrack = tdr.getDeparture(trainNumber).getTrack();
+    if (currentTrack == -1) {
+      System.out.println("Current track is not set.");
+    } else {
+      System.out.println("Current track: " + currentTrack);
+    }
     String error = "Track must be a positive number below " + Short.MAX_VALUE;
     short track = inputTrack("Enter track: ", error);
     tdr.setTrack(trainNumber, track);
@@ -369,8 +538,8 @@ public class UserInterface {
    * Pauses the program until the user presses ENTER.
    * TODO: Figure out if this method can be refactored to a prettier form.
    */
-  private void pressEnterToContinue() {
-    System.out.println("Press ENTER to return to main menu");
+  private void pressEnterToContinue(String prompt) {
+    System.out.println(prompt);
     try {
       while (System.in.available() == 0){} //Runs (waits) until there is input from user.
       while (System.in.available() > 0) { //Consumes all input
@@ -440,11 +609,11 @@ public class UserInterface {
       try {
         System.out.print(prompt);
         String in = sc.nextLine(); //Take user input.
-        if (in.isEmpty()) {
+        if (in.isEmpty()) { //Track not yet set.
           return -1;
         }
         short temp = Short.parseShort(in); //Attempt to parse as short.
-        if (temp == -1 || temp >= 1) { //If valid
+        if (temp == -1 || (temp >= 1 && temp <= noTracks)) { //If valid
           return temp;
         }
         throw new IllegalArgumentException();
@@ -517,6 +686,8 @@ public class UserInterface {
 
   /**
    * Takes delay from the user in the correct format.
+   * Ensures delay is not too short or long so that departure
+   * fits between current system time and end of day.
    *
    * @param departureTime Departure time of the departure that delay is assigned to.
    *                      This is used to avoid departure times spilling into next day.
@@ -525,23 +696,30 @@ public class UserInterface {
    *                      and returns LocalTime.of(0, 0) if input is empty.
    * @param prompt Presented to the user before input is taken.
    * @param error Presented to the user if input is invalid.
+   * @param enforceValid If true, only delays that land departure time after system time is allowed.
    * @return Returns LocalTime object that together with departureTime
    *         provided does not exceed 23:59.
    */
-  private LocalTime inputDelay(LocalTime departureTime, String prompt, String error) {
+  private LocalTime inputDelay(LocalTime departureTime, String prompt,
+                               String error, boolean enforceValid) {
     LocalTime delay;
     int depTimeMins = departureTime.getHour() * 60 + departureTime.getMinute();
+    int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
     while (true) {
       try {
         System.out.print(prompt);
         String in = sc.nextLine();
         if (in.isEmpty()) {
-          return LocalTime.of(0, 0);
+          delay = LocalTime.of(0, 0);
+        } else {
+          delay = LocalTime.parse(in);
         }
-        delay = LocalTime.parse(in);
         int actDepTimeMins = depTimeMins + delay.getHour() * 60 + delay.getMinute();
-        if (actDepTimeMins >= 60 * 24) {
+        if (actDepTimeMins >= 60 * 24) { //If departure time is after 23:59.
           throw new IllegalArgumentException("Delay is too long. Departure is past day.");
+        } else if (actDepTimeMins < systemTimeMins && enforceValid) {
+          throw new IllegalArgumentException("Departure time plus delay lands "
+            + "before current system time. Please enter a larger delay.");
         }
         return delay;
       } catch (IllegalArgumentException e) {
@@ -565,7 +743,7 @@ public class UserInterface {
     if (content.length < 2) {
       throw new IllegalArgumentException("At least one option is required");
     }
-    String prompt = generateOptionBasedMenu(content);
+    String prompt = generateOptionBasedMenu(content); //Generate complete menu as string.
     String error = "Please enter a valid option between '1' and '"
             + (content.length - 1 + "' (without quotation marks)");
     return inputInt(prompt, error, 1, content.length - 1);

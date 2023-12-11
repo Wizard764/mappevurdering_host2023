@@ -98,6 +98,35 @@ public class TrainDepartureRegistry {
   }
 
   /**
+   * Finds the highest track number used.
+   * @return Returns 0 if no departures exist, -1 if no tracks are set.
+   */
+  public short getHighestTrackNo() {
+    short highestTrackNo = 0;
+    for (TrainDeparture t : departures) {
+      highestTrackNo = (short) Integer.max(highestTrackNo, t.getTrack());
+    }
+    return highestTrackNo;
+  }
+
+  /**
+   * Unsets all tracks higher than provided limit.
+   *
+   * @param limit Highest track number allowed.
+   * @return Returns number of tracks unset.
+   */
+  public int unsetTrackBelowLimit(short limit) {
+    int departuresUnset = 0;
+    for (TrainDeparture t : departures) {
+      if (t.getTrack() > limit) {
+        t.unsetTrack();
+        departuresUnset++;
+      }
+    }
+    return departuresUnset;
+  }
+
+  /**
    * Deletes departures that are past as of the time given as parameter.
    * METACOMMENT-NOTE: In actual use it would make sense for this method to fetch the current time,
    *     but the task description asks for time to be adjusted manually.
@@ -106,11 +135,17 @@ public class TrainDepartureRegistry {
    * @param currentTime The current time.
    */
   public void deleteOldDepartures(LocalTime currentTime) {
+    if (departures.isEmpty()) {
+      return;
+    }
     sortDeparturesByTimeIncDelay();
     final int currentTimeMins = currentTime.getHour() * 60 + currentTime.getMinute();
     int currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
-    while (currentDepActDepartureTimeMins <= currentTimeMins) {
+    while (currentDepActDepartureTimeMins < currentTimeMins) {
       departures.remove(0);
+      if (departures.isEmpty()) {
+        return;
+      }
       currentDepActDepartureTimeMins = departures.get(0).getDepartureTimeIncDelayInMinutes();
     }
   }

@@ -549,7 +549,8 @@ public class UserInterface {
    * TODO: Figure out if this method can be refactored to a prettier form.
    */
   private void pressEnterToContinue(String prompt) {
-    System.out.println(prompt);
+    System.out.print("\u001B[47m");
+    printlnColor(ColorDictionary.BLACK, prompt);
     try {
       while (System.in.available() == 0){} //Runs (waits) until there is input from user.
       while (System.in.available() > 0) { //Consumes all input

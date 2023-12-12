@@ -510,7 +510,7 @@ public class UserInterface {
         chain = false;
       } else {
         printlnColor(ColorDictionary.GREEN, "Delay remains unchanged.");
-        return chain;
+        return true;
       }
     }
     tdr.setDelay(trainNumber, delay);

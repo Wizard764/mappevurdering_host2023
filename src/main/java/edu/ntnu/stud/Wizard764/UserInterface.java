@@ -763,4 +763,14 @@ public class UserInterface {
     }
     return out.toString();
   }
+
+  /**
+   * Prints text to the console with specified color.
+   *
+   * @param ansiColorCode ANSI color code representing text color.
+   * @param text Text to be printed to the console.
+   */
+  private void printColor(String ansiColorCode, String text) {
+    System.out.println(ansiColorCode + text + ColorDictionary.RESET);
+  }
 }

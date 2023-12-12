@@ -40,7 +40,7 @@ public class UserInterface {
     String[] lines = {"TestLine", "R60", "F4"};
     String[] trainNumbers = {"1771", "123", "ABC123"};
     String[] destinations = {"TestDestination", "Trondheim",
-            "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name"
+        "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name"
     };
     LocalTime[] delays = {LocalTime.of(1, 8), LocalTime.of(0, 15), LocalTime.of(0, 0)};
     short[] tracks = {4, 1, -1};

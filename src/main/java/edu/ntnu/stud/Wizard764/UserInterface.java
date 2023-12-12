@@ -574,16 +574,12 @@ public class UserInterface {
     while (true) { //Keep asking until valid input is given
       try {
         System.out.print(prompt);
-        int temp = sc.nextInt(); //Take Integer from scanner.
-        sc.nextLine(); //Consume newline character.
+        int temp = Integer.parseInt(sc.nextLine()); //Take Integer from scanner.
         if (temp >= min && temp <= max) {
           return temp;
         }
         throw new IllegalArgumentException();
-      } catch (InputMismatchException e) { //Triggered when input is not integer.
-        printlnColor(ColorDictionary.RED, error);
-        sc.next(); //"Clean" scanner if input is wrong.
-      } catch (IllegalArgumentException e) { //Triggered when int is not in specified range.
+      } catch (Exception e) { //Triggered when input is not integer.
         printlnColor(ColorDictionary.RED, error);
       }
     }

@@ -569,10 +569,10 @@ public class UserInterface {
         }
         throw new IllegalArgumentException();
       } catch (InputMismatchException e) { //Triggered when input is not integer.
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
         sc.next(); //"Clean" scanner if input is wrong.
       } catch (IllegalArgumentException e) { //Triggered when int is not in specified range.
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -618,7 +618,7 @@ public class UserInterface {
         }
         throw new IllegalArgumentException();
       } catch (Exception e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -639,7 +639,7 @@ public class UserInterface {
         }
         return trainNumber;
       } catch (IllegalArgumentException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -661,7 +661,7 @@ public class UserInterface {
         }
         return in;
       } catch (InputMismatchException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -679,7 +679,7 @@ public class UserInterface {
         System.out.print(prompt);
         return LocalTime.parse(sc.nextLine()); //Take user input.
       } catch (DateTimeParseException e) { //Handle wrong input format.
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -723,9 +723,9 @@ public class UserInterface {
         }
         return delay;
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       } catch (DateTimeParseException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }

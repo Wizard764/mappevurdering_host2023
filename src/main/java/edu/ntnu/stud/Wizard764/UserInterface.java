@@ -65,7 +65,7 @@ public class UserInterface {
    * Runs the main menu that the user lands on when the program is run.
    */
   private void runMainMenu() {
-    String[] testOpts = {"Main menu:",
+    String[] testOpts = {ColorDictionary.BLACK + "\u001B[47mMain menu:" + ColorDictionary.RESET,
                          "Display departures",
                          "Add departure",
                          "Search for departure (by train number or destination)",
@@ -361,7 +361,8 @@ public class UserInterface {
    */
   private void runSettingsMenu() {
     while (true) {
-      String[] prompt = {ColorDictionary.BLUE + "Settings (select to modify):",
+      String[] prompt = {ColorDictionary.BLACK + "\u001B[44mSettings (select to modify):"
+                       + ColorDictionary.RESET + ColorDictionary.BLUE,
                          "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
                          "Max number of departures (Current: " + maxNoDepartures + ")",
                          "Toggle comments (CURRENT: " + getCommentStateStr() + ")",

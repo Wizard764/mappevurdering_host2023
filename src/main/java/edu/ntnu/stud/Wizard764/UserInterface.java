@@ -160,13 +160,13 @@ public class UserInterface {
     if (inputBinaryDecision()) { //If information is correct
       tdr.addDeparture(newDeparture); //Add departure to registry
       noDepsAdded++; //Increment number of departures added.
-      System.out.println("SUCCESS: new departure added.");
+      printlnColor(ColorDictionary.GREEN, "SUCCESS: new departure added.");
       System.out.println("Would you like to add another departure?"
               + " If no, you will be returned to the main menu.");
       if (inputBinaryDecision()) { //If user wants to add another departure.
         addDeparture(noDepsAdded); //Recursive method call.
       } else { //Is user is finished adding departures.
-        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+        printlnColor(ColorDictionary.GREEN, "Successfully added " + noDepsAdded + " departure(s).");
       }
     } else { //If information entered is incorrect according to user.
       System.out.println("Would you like to re-enter the information for the departure?"
@@ -174,8 +174,8 @@ public class UserInterface {
       if (inputBinaryDecision()) { //If user wants to re-enter information.
         addDeparture(noDepsAdded); //Recursive method call.
       } else { //If user does not want to re-enter information.
-        System.out.println("Operation cancelled. No departure was added.");
-        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+        printlnColor(ColorDictionary.GREEN, "Operation cancelled. No departure was added.");
+        printlnColor(ColorDictionary.GREEN, "Successfully added " + noDepsAdded + " departure(s).");
       }
     }
   }
@@ -197,21 +197,21 @@ public class UserInterface {
           throw new IllegalArgumentException("New time must be after current time.");
         }
         String warning = "WARNING: Updating system time will automatically delete old departures!";
-        System.out.println(warning);
+        printlnColor(ColorDictionary.YELLOW, warning);
         System.out.println("Confirm new system time: " + in);
         if (inputBinaryDecision()) {
           systemTime = in;
-          System.out.println("Successfully changed system time to: " + systemTime);
+          printlnColor(ColorDictionary.GREEN, "Successfully changed system time to: " + systemTime);
           int noDepsDeleted = tdr.getNoDepartures();
           tdr.deleteOldDepartures(systemTime);
           noDepsDeleted -= tdr.getNoDepartures();
-          System.out.println(noDepsDeleted + " departure(s) were deleted.");
+          printlnColor(ColorDictionary.GREEN, noDepsDeleted + " departure(s) were deleted.");
           return;
         }
-        System.out.println("Operation cancelled. System time remains unchanged.");
+        printlnColor(ColorDictionary.GREEN, "Operation cancelled. System time remains unchanged.");
         return;
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       }
     }
   }
@@ -245,9 +245,9 @@ public class UserInterface {
     try {
       String trainNum = inputEnforceNotEmpty("Please enter train number: ",
                                              "Train number may not be blank.");
-      System.out.println("Found departure:\n" + tdr.getDeparture(trainNum));
+      printlnColor(ColorDictionary.GREEN, "Found departure:\n" + tdr.getDeparture(trainNum));
     } catch (IllegalArgumentException e) {
-      System.out.println(e.getMessage());
+      printlnColor(ColorDictionary.RED, e.getMessage());
     }
   }
 
@@ -258,7 +258,8 @@ public class UserInterface {
     String prompt = "Enter destination to search for: ";
     String error = "Destination cannot be blank.";
     TrainDeparture[] tds = tdr.getDeparturesByDestination(inputEnforceNotEmpty(prompt, error));
-    System.out.println("Found " + tds.length + " departure(s) with matching destination.");
+    printlnColor(ColorDictionary.GREEN, "Found " + tds.length
+            + " departure(s) with matching destination.");
     Arrays.stream(tds).forEach(System.out::println);
   }
 
@@ -268,8 +269,8 @@ public class UserInterface {
   private void toggleComments() {
     commentState = !commentState;
     tdr.setCommentState(commentState);
-    System.out.println("Comment state toggled.");
-    System.out.println("Current state: " + getCommentStateStr());
+    printlnColor(ColorDictionary.GREEN, "Comment state toggled.");
+    printlnColor(ColorDictionary.GREEN, "Current state: " + getCommentStateStr());
   }
 
   /**
@@ -285,7 +286,8 @@ public class UserInterface {
       String error = "Train number cannot be blank";
       trainNumber = inputEnforceNotEmpty(prompt, error);
       if (!tdr.departureExists(trainNumber)) {
-        System.out.println("Departure does not exist. Would you like to try another train number?");
+        printColor(ColorDictionary.RED, "Departure does not exist. ");
+        System.out.println("Would you like to try another train number?");
         System.out.println("If no, you will be returned to the main menu.");
         if (!inputBinaryDecision()) {
           trainNumber = "";
@@ -411,21 +413,22 @@ public class UserInterface {
     boolean flag = false;
     System.out.println("Please confirm new track limit: " + newNoTracks);
     if (newNoTracks < tdr.getHighestTrackNo()) {
-      System.out.println("WARNING: Selected track number is lower than certain track"
-              + " numbers associated with existing departures.");
-      System.out.println("Applying this change will cause those"
+      printlnColor(ColorDictionary.YELLOW, "WARNING: Selected track number is lower than certain"
+              + "track numbers associated with existing departures.");
+      printlnColor(ColorDictionary.YELLOW, "Applying this change will cause those"
               + " departures to have their track unset.");
       flag = true;
     }
     if (inputBinaryDecision()) {
       noTracks = newNoTracks;
-      System.out.println("Number of tracks was successfully changed to: " + noTracks);
+      printlnColor(ColorDictionary.GREEN,
+              "Number of tracks was successfully changed to: " + noTracks);
       if (flag) {
-        System.out.println("Track number of " + tdr.unsetTrackBelowLimit(noTracks)
+        printlnColor(ColorDictionary.GREEN, "Track number of " + tdr.unsetTrackBelowLimit(noTracks)
                 + " departure(s) were unset.");
       }
     } else {
-      System.out.println("Operation cancelled. Track number remains unchanged.");
+      printlnColor(ColorDictionary.GREEN, "Operation cancelled. Track number remains unchanged.");
     }
   }
 
@@ -454,14 +457,14 @@ public class UserInterface {
         }
         break; //If newNoTracks is valid, move out of the loop.
       } catch (NumberFormatException e) {
-        System.out.println("Please enter a valid integer on the format '123'"
+        printlnColor(ColorDictionary.RED, "Please enter a valid integer on the format '123'"
                 + " (without quotation marks).");
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       }
     }
     if (newMaxNoDeps < tdr.getNoDepartures()) {
-      System.out.println("New max number of departures is lower than"
+      printlnColor(ColorDictionary.RED, "New max number of departures is lower than"
               + " current number of departures stored in registry.");
       System.out.println("If you want to set this limit, you must first delete some departures.");
       return;
@@ -469,9 +472,11 @@ public class UserInterface {
     System.out.println("Please confirm new departure limit: " + newMaxNoDeps);
     if (inputBinaryDecision()) {
       maxNoDepartures = newMaxNoDeps;
-      System.out.println("Departure limit was successfully changed to: " + maxNoDepartures);
+      printlnColor(ColorDictionary.GREEN,
+              "Departure limit was successfully changed to: " + maxNoDepartures);
     } else {
-      System.out.println("Operation cancelled. Departure limit remains unchanged.");
+      printlnColor(ColorDictionary.GREEN,
+              "Operation cancelled. Departure limit remains unchanged.");
     }
   }
 
@@ -492,13 +497,14 @@ public class UserInterface {
     int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
     boolean chain = true;
     if (departureTimeMins + delayMins < systemTimeMins) {
-      System.out.println("New delay will cause departure to be automatically deleted.");
+      printlnColor(ColorDictionary.YELLOW,
+              "WARNING: New delay will cause departure to be automatically deleted.");
       System.out.println("Are you sure you want to proceed?");
       if (inputBinaryDecision()) {
-        System.out.println("Departure deleted.");
+        printlnColor(ColorDictionary.GREEN, "Departure deleted.");
         chain = false;
       } else {
-        System.out.println("Delay remains unchanged.");
+        printlnColor(ColorDictionary.GREEN, "Delay remains unchanged.");
         return chain;
       }
     }

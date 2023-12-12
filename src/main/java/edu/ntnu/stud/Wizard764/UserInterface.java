@@ -70,8 +70,13 @@ public class UserInterface {
                          "Add departure",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
-                         "Settings (max values, limits and comments)",
-                         "Exit application\nSelect: "};
+                         ColorDictionary.BLUE
+                                 + "Settings (max values, limits and comments)"
+                                 + ColorDictionary.RESET,
+                         ColorDictionary.RED
+                                 + "Exit application"
+                                 + ColorDictionary.RESET
+                                 + "\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
@@ -356,12 +361,12 @@ public class UserInterface {
    */
   private void runSettingsMenu() {
     while (true) {
-      String[] prompt = {"Settings (select to modify):",
+      String[] prompt = {ColorDictionary.BLUE + "Settings (select to modify):",
                          "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
                          "Max number of departures (Current: " + maxNoDepartures + ")",
                          "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Set system time (Current time: " + systemTime + ")",
-                         "Return to main menu\n"
+                         ColorDictionary.RESET + "Return to main menu\n"
                        + "Select: "};
       int chosen = runOptionBasedMenu(prompt);
       switch (chosen) {

@@ -483,7 +483,7 @@ public class UserInterface {
    */
   private boolean modifyDelay(String trainNumber) throws IllegalArgumentException {
     System.out.println("Current delay: " + tdr.getDeparture(trainNumber).getDelay());
-    String prompt = "Enter delay in the format 'HH:MM': ";
+    String prompt = "Enter delay in the format 'HH:MM' (can be empty): ";
     String error = "Delay must be in the following format: '12:34' (without quotation marks)";
     LocalTime departureTime = tdr.getDeparture(trainNumber).getDepartureTime();
     LocalTime delay = inputDelay(departureTime, prompt, error, false);

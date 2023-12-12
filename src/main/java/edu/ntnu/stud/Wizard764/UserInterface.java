@@ -19,17 +19,9 @@ public class UserInterface {
   private boolean commentState;
 
   /**
-   * Constructor.
+   * Constructor that initializes member variables.
    */
   public UserInterface() {
-
-  }
-
-  /**
-   * Initialization method.
-   * Initialized member variables. Runs once upon program execution.
-   */
-  public void init() {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
@@ -40,15 +32,15 @@ public class UserInterface {
   }
 
   /**
-   * "Main program method"
-   * Runs the user interface and manages the train departure registry based on user input.
+   * Initialization method.
+   * Adds some test code.
    */
-  public void start() {
+  public void init() {
     LocalTime[] departureTimes = {LocalTime.of(9, 30), LocalTime.of(10, 30), LocalTime.of(0, 5)};
     String[] lines = {"TestLine", "R60", "F4"};
     String[] trainNumbers = {"1771", "123", "ABC123"};
     String[] destinations = {"TestDestination", "Trondheim",
-        "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name"
+            "This is a loooooooooooooooooooooooooooooooooooooooooooooooooooooooong destination name"
     };
     LocalTime[] delays = {LocalTime.of(1, 8), LocalTime.of(0, 15), LocalTime.of(0, 0)};
     short[] tracks = {4, 1, -1};
@@ -56,6 +48,13 @@ public class UserInterface {
       tdr.addDeparture(new TrainDeparture(departureTimes[i], lines[i],
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
+  }
+
+  /**
+   * "Main program method"
+   * Runs the user interface and manages the train departure registry based on user input.
+   */
+  public void start() {
     System.out.println("\n\n\n#####   TRAIN DISPATCH SYSTEM   #####");
     while (mainRunningFlag) {
       runMainMenu();

@@ -19,17 +19,9 @@ public class UserInterface {
   private boolean commentState;
 
   /**
-   * Constructor to initialize scanner.
+   * Constructor that initializes member variables.
    */
   public UserInterface() {
-
-  }
-
-  /**
-   * Initialization method.
-   * Initialized member variables. Runs once upon program execution.
-   */
-  public void init() {
     sc = new Scanner(System.in);
     tdr = new TrainDepartureRegistry();
     systemTime = LocalTime.of(0, 0);
@@ -40,10 +32,10 @@ public class UserInterface {
   }
 
   /**
-   * "Main program method"
-   * Runs the user interface and manages the train departure registry based on user input.
+   * Initialization method.
+   * Adds some test code.
    */
-  public void start() {
+  public void init() {
     LocalTime[] departureTimes = {LocalTime.of(9, 30), LocalTime.of(10, 30), LocalTime.of(0, 5)};
     String[] lines = {"TestLine", "R60", "F4"};
     String[] trainNumbers = {"1771", "123", "ABC123"};
@@ -56,6 +48,13 @@ public class UserInterface {
       tdr.addDeparture(new TrainDeparture(departureTimes[i], lines[i],
               trainNumbers[i], destinations[i], delays[i], tracks[i]));
     }
+  }
+
+  /**
+   * "Main program method"
+   * Runs the user interface and manages the train departure registry based on user input.
+   */
+  public void start() {
     System.out.println("\n\n\n#####   TRAIN DISPATCH SYSTEM   #####");
     while (mainRunningFlag) {
       runMainMenu();
@@ -66,25 +65,26 @@ public class UserInterface {
    * Runs the main menu that the user lands on when the program is run.
    */
   private void runMainMenu() {
-    String[] testOpts = {"Main menu:",
+    String[] testOpts = {ColorDictionary.BLACK + "\u001B[47mMain menu:" + ColorDictionary.RESET,
                          "Display departures",
                          "Add departure",
-                         "Set system time (Current time: " + systemTime + ")",
-                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
                          "Search for departure (by train number or destination)",
                          "Modify departure (comment, delay, track)",
-                         "Settings (max values and limits)",
-                         "Exit application\nSelect: "};
+                         ColorDictionary.BLUE
+                                 + "Settings (max values, limits and comments)"
+                                 + ColorDictionary.RESET,
+                         ColorDictionary.RED
+                                 + "Exit application"
+                                 + ColorDictionary.RESET
+                                 + "\nSelect: "};
     int chosen = runOptionBasedMenu(testOpts);
     switch (chosen) {
       case 1 -> printInformationBoard();
       case 2 -> addDeparture();
-      case 3 -> setSystemTime();
-      case 4 -> toggleComments();
-      case 5 -> searchForDeparture();
-      case 6 -> modifyDeparture();
-      case 7 -> runSettingsMenu();
-      case 8 -> mainRunningFlag = false;
+      case 3 -> searchForDeparture();
+      case 4 -> modifyDeparture();
+      case 5 -> runSettingsMenu();
+      case 6 -> mainRunningFlag = false;
       default -> throw new Error("Error. Default condition executed unexpectedly.");
     }
     if (mainRunningFlag) {
@@ -164,13 +164,13 @@ public class UserInterface {
     if (inputBinaryDecision()) { //If information is correct
       tdr.addDeparture(newDeparture); //Add departure to registry
       noDepsAdded++; //Increment number of departures added.
-      System.out.println("SUCCESS: new departure added.");
+      printlnColor(ColorDictionary.GREEN, "SUCCESS: new departure added.");
       System.out.println("Would you like to add another departure?"
               + " If no, you will be returned to the main menu.");
       if (inputBinaryDecision()) { //If user wants to add another departure.
         addDeparture(noDepsAdded); //Recursive method call.
       } else { //Is user is finished adding departures.
-        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+        printlnColor(ColorDictionary.GREEN, "Successfully added " + noDepsAdded + " departure(s).");
       }
     } else { //If information entered is incorrect according to user.
       System.out.println("Would you like to re-enter the information for the departure?"
@@ -178,8 +178,8 @@ public class UserInterface {
       if (inputBinaryDecision()) { //If user wants to re-enter information.
         addDeparture(noDepsAdded); //Recursive method call.
       } else { //If user does not want to re-enter information.
-        System.out.println("Operation cancelled. No departure was added.");
-        System.out.println("Successfully added " + noDepsAdded + " departure(s).");
+        printlnColor(ColorDictionary.GREEN, "Operation cancelled. No departure was added.");
+        printlnColor(ColorDictionary.GREEN, "Successfully added " + noDepsAdded + " departure(s).");
       }
     }
   }
@@ -201,21 +201,21 @@ public class UserInterface {
           throw new IllegalArgumentException("New time must be after current time.");
         }
         String warning = "WARNING: Updating system time will automatically delete old departures!";
-        System.out.println(warning);
+        printlnColor(ColorDictionary.YELLOW, warning);
         System.out.println("Confirm new system time: " + in);
         if (inputBinaryDecision()) {
           systemTime = in;
-          System.out.println("Successfully changed system time to: " + systemTime);
+          printlnColor(ColorDictionary.GREEN, "Successfully changed system time to: " + systemTime);
           int noDepsDeleted = tdr.getNoDepartures();
           tdr.deleteOldDepartures(systemTime);
           noDepsDeleted -= tdr.getNoDepartures();
-          System.out.println(noDepsDeleted + " departure(s) were deleted.");
+          printlnColor(ColorDictionary.GREEN, noDepsDeleted + " departure(s) were deleted.");
           return;
         }
-        System.out.println("Operation cancelled. System time remains unchanged.");
+        printlnColor(ColorDictionary.GREEN, "Operation cancelled. System time remains unchanged.");
         return;
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       }
     }
   }
@@ -249,9 +249,9 @@ public class UserInterface {
     try {
       String trainNum = inputEnforceNotEmpty("Please enter train number: ",
                                              "Train number may not be blank.");
-      System.out.println("Found departure:\n" + tdr.getDeparture(trainNum));
+      printlnColor(ColorDictionary.GREEN, "Found departure:\n" + tdr.getDeparture(trainNum));
     } catch (IllegalArgumentException e) {
-      System.out.println(e.getMessage());
+      printlnColor(ColorDictionary.RED, e.getMessage());
     }
   }
 
@@ -262,7 +262,8 @@ public class UserInterface {
     String prompt = "Enter destination to search for: ";
     String error = "Destination cannot be blank.";
     TrainDeparture[] tds = tdr.getDeparturesByDestination(inputEnforceNotEmpty(prompt, error));
-    System.out.println("Found " + tds.length + " departure(s) with matching destination.");
+    printlnColor(ColorDictionary.GREEN, "Found " + tds.length
+            + " departure(s) with matching destination.");
     Arrays.stream(tds).forEach(System.out::println);
   }
 
@@ -272,8 +273,8 @@ public class UserInterface {
   private void toggleComments() {
     commentState = !commentState;
     tdr.setCommentState(commentState);
-    System.out.println("Comment state toggled.");
-    System.out.println("Current state: " + getCommentStateStr());
+    printlnColor(ColorDictionary.GREEN, "Comment state toggled.");
+    printlnColor(ColorDictionary.GREEN, "Current state: " + getCommentStateStr());
   }
 
   /**
@@ -289,7 +290,8 @@ public class UserInterface {
       String error = "Train number cannot be blank";
       trainNumber = inputEnforceNotEmpty(prompt, error);
       if (!tdr.departureExists(trainNumber)) {
-        System.out.println("Departure does not exist. Would you like to try another train number?");
+        printColor(ColorDictionary.RED, "Departure does not exist. ");
+        System.out.println("Would you like to try another train number?");
         System.out.println("If no, you will be returned to the main menu.");
         if (!inputBinaryDecision()) {
           trainNumber = "";
@@ -359,16 +361,21 @@ public class UserInterface {
    */
   private void runSettingsMenu() {
     while (true) {
-      String[] prompt = {"Settings (select to modify):",
+      String[] prompt = {ColorDictionary.BLACK + "\u001B[44mSettings (select to modify):"
+                       + ColorDictionary.RESET + ColorDictionary.BLUE,
                          "Number of tracks, i.e.: max track number (Current: " + noTracks + ")",
                          "Max number of departures (Current: " + maxNoDepartures + ")",
-                         "Return to main menu\n"
+                         "Toggle comments (CURRENT: " + getCommentStateStr() + ")",
+                         "Set system time (Current time: " + systemTime + ")",
+                         ColorDictionary.RESET + "Return to main menu\n"
                        + "Select: "};
       int chosen = runOptionBasedMenu(prompt);
       switch (chosen) {
         case 1 -> modifyNoTracks();
         case 2 -> modifyMaxNoDepartures();
-        case 3 -> {
+        case 3 -> toggleComments();
+        case 4 -> setSystemTime();
+        case 5 -> {
           return;
         }
         default -> throw new Error("Error. Default condition executed unexpectedly.");
@@ -411,21 +418,22 @@ public class UserInterface {
     boolean flag = false;
     System.out.println("Please confirm new track limit: " + newNoTracks);
     if (newNoTracks < tdr.getHighestTrackNo()) {
-      System.out.println("WARNING: Selected track number is lower than certain track"
-              + " numbers associated with existing departures.");
-      System.out.println("Applying this change will cause those"
+      printlnColor(ColorDictionary.YELLOW, "WARNING: Selected track number is lower than certain"
+              + "track numbers associated with existing departures.");
+      printlnColor(ColorDictionary.YELLOW, "Applying this change will cause those"
               + " departures to have their track unset.");
       flag = true;
     }
     if (inputBinaryDecision()) {
       noTracks = newNoTracks;
-      System.out.println("Number of tracks was successfully changed to: " + noTracks);
+      printlnColor(ColorDictionary.GREEN,
+              "Number of tracks was successfully changed to: " + noTracks);
       if (flag) {
-        System.out.println("Track number of " + tdr.unsetTrackBelowLimit(noTracks)
+        printlnColor(ColorDictionary.GREEN, "Track number of " + tdr.unsetTrackBelowLimit(noTracks)
                 + " departure(s) were unset.");
       }
     } else {
-      System.out.println("Operation cancelled. Track number remains unchanged.");
+      printlnColor(ColorDictionary.GREEN, "Operation cancelled. Track number remains unchanged.");
     }
   }
 
@@ -454,14 +462,14 @@ public class UserInterface {
         }
         break; //If newNoTracks is valid, move out of the loop.
       } catch (NumberFormatException e) {
-        System.out.println("Please enter a valid integer on the format '123'"
+        printlnColor(ColorDictionary.RED, "Please enter a valid integer on the format '123'"
                 + " (without quotation marks).");
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       }
     }
     if (newMaxNoDeps < tdr.getNoDepartures()) {
-      System.out.println("New max number of departures is lower than"
+      printlnColor(ColorDictionary.RED, "New max number of departures is lower than"
               + " current number of departures stored in registry.");
       System.out.println("If you want to set this limit, you must first delete some departures.");
       return;
@@ -469,9 +477,11 @@ public class UserInterface {
     System.out.println("Please confirm new departure limit: " + newMaxNoDeps);
     if (inputBinaryDecision()) {
       maxNoDepartures = newMaxNoDeps;
-      System.out.println("Departure limit was successfully changed to: " + maxNoDepartures);
+      printlnColor(ColorDictionary.GREEN,
+              "Departure limit was successfully changed to: " + maxNoDepartures);
     } else {
-      System.out.println("Operation cancelled. Departure limit remains unchanged.");
+      printlnColor(ColorDictionary.GREEN,
+              "Operation cancelled. Departure limit remains unchanged.");
     }
   }
 
@@ -483,7 +493,7 @@ public class UserInterface {
    */
   private boolean modifyDelay(String trainNumber) throws IllegalArgumentException {
     System.out.println("Current delay: " + tdr.getDeparture(trainNumber).getDelay());
-    String prompt = "Enter delay in the format 'HH:MM': ";
+    String prompt = "Enter delay in the format 'HH:MM' (can be empty): ";
     String error = "Delay must be in the following format: '12:34' (without quotation marks)";
     LocalTime departureTime = tdr.getDeparture(trainNumber).getDepartureTime();
     LocalTime delay = inputDelay(departureTime, prompt, error, false);
@@ -492,14 +502,15 @@ public class UserInterface {
     int systemTimeMins = systemTime.getHour() * 60 + systemTime.getMinute();
     boolean chain = true;
     if (departureTimeMins + delayMins < systemTimeMins) {
-      System.out.println("New delay will cause departure to be automatically deleted.");
+      printlnColor(ColorDictionary.YELLOW,
+              "WARNING: New delay will cause departure to be automatically deleted.");
       System.out.println("Are you sure you want to proceed?");
       if (inputBinaryDecision()) {
-        System.out.println("Departure deleted.");
+        printlnColor(ColorDictionary.GREEN, "Departure deleted.");
         chain = false;
       } else {
-        System.out.println("Delay remains unchanged.");
-        return chain;
+        printlnColor(ColorDictionary.GREEN, "Delay remains unchanged.");
+        return true;
       }
     }
     tdr.setDelay(trainNumber, delay);
@@ -539,7 +550,8 @@ public class UserInterface {
    * TODO: Figure out if this method can be refactored to a prettier form.
    */
   private void pressEnterToContinue(String prompt) {
-    System.out.println(prompt);
+    System.out.print("\u001B[47m");
+    printlnColor(ColorDictionary.BLACK, prompt);
     try {
       while (System.in.available() == 0){} //Runs (waits) until there is input from user.
       while (System.in.available() > 0) { //Consumes all input
@@ -562,17 +574,13 @@ public class UserInterface {
     while (true) { //Keep asking until valid input is given
       try {
         System.out.print(prompt);
-        int temp = sc.nextInt(); //Take Integer from scanner.
-        sc.nextLine(); //Consume newline character.
+        int temp = Integer.parseInt(sc.nextLine()); //Take Integer from scanner.
         if (temp >= min && temp <= max) {
           return temp;
         }
         throw new IllegalArgumentException();
-      } catch (InputMismatchException e) { //Triggered when input is not integer.
-        System.out.println(error);
-        sc.next(); //"Clean" scanner if input is wrong.
-      } catch (IllegalArgumentException e) { //Triggered when int is not in specified range.
-        System.out.println(error);
+      } catch (Exception e) { //Triggered when input is not integer.
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -618,7 +626,7 @@ public class UserInterface {
         }
         throw new IllegalArgumentException();
       } catch (Exception e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -639,7 +647,7 @@ public class UserInterface {
         }
         return trainNumber;
       } catch (IllegalArgumentException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -661,7 +669,7 @@ public class UserInterface {
         }
         return in;
       } catch (InputMismatchException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -679,7 +687,7 @@ public class UserInterface {
         System.out.print(prompt);
         return LocalTime.parse(sc.nextLine()); //Take user input.
       } catch (DateTimeParseException e) { //Handle wrong input format.
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -723,9 +731,9 @@ public class UserInterface {
         }
         return delay;
       } catch (IllegalArgumentException e) {
-        System.out.println(e.getMessage());
+        printlnColor(ColorDictionary.RED, e.getMessage());
       } catch (DateTimeParseException e) {
-        System.out.println(error);
+        printlnColor(ColorDictionary.RED, error);
       }
     }
   }
@@ -762,5 +770,25 @@ public class UserInterface {
       out.append("\n").append(i).append(". ").append(content[i]);
     }
     return out.toString();
+  }
+
+  /**
+   * Prints text to the console with specified color.
+   *
+   * @param ansiColorCode ANSI color code representing text color.
+   * @param text Text to be printed to the console.
+   */
+  private void printlnColor(String ansiColorCode, String text) {
+    System.out.println(ansiColorCode + text + ColorDictionary.RESET);
+  }
+
+  /**
+   * Prints text to the console with specified color.
+   *
+   * @param ansiColorCode ANSI color code representing text color.
+   * @param text Text to be printed to the console.
+   */
+  private void printColor(String ansiColorCode, String text) {
+    System.out.print(ansiColorCode + text + ColorDictionary.RESET);
   }
 }

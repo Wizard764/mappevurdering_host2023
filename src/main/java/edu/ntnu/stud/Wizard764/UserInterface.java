@@ -19,7 +19,7 @@ public class UserInterface {
   private boolean commentState;
 
   /**
-   * Constructor to initialize scanner.
+   * Constructor.
    */
   public UserInterface() {
 
